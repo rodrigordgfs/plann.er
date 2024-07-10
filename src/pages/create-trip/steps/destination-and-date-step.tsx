@@ -9,16 +9,19 @@ import { ptBR } from "date-fns/locale";
 interface DestinationAndDateStepProps {
   isGuestsInputOpen: boolean;
   handleChangeGuestInput: (value: boolean) => void;
+  setDestination: (destination: string) => void;
+  setEventStartAndDates: (dates: DateRange | undefined) => void;
+  eventStartAndDates: DateRange | undefined;
 }
 
 export function DestinationAndDateStep({
   handleChangeGuestInput,
   isGuestsInputOpen,
+  setDestination,
+  eventStartAndDates,
+  setEventStartAndDates,
 }: DestinationAndDateStepProps) {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
-  const [eventStartAndDates, setEventStartAndDates] = useState<
-    DateRange | undefined
-  >(undefined);
 
   const handleDatePicker = (value: boolean) => {
     return setIsDatePickerOpen(value);
@@ -42,6 +45,7 @@ export function DestinationAndDateStep({
           type="text"
           placeholder="Pra onde você vai?"
           className="bg-transparent text-lg placeholder-zinc-400 outline-none flex-1"
+          onChange={(event) => setDestination(event.target.value)}
         />
       </div>
       <button
