@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { format } from "date-fns";
 import { api } from "../../lib/axios";
+import { toast } from "react-toastify";
 
 interface Trip {
   id: string;
@@ -20,7 +21,12 @@ export function DestinationAndDateHeader() {
   const [trip, setTrip] = useState<Trip | undefined>();
 
   useEffect(() => {
-    api.get(`/trips/${tripId}`).then(({ data }) => setTrip(data.trip));
+    api
+      .get(`/trips/${tripId}`)
+      .then(({ data }) => setTrip(data.trip))
+      .catch((e) => {
+        toast.error(e.message);
+      });
   }, [tripId]);
 
   const displayedDate = trip

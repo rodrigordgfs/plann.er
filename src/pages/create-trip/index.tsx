@@ -6,6 +6,7 @@ import { DestinationAndDateStep } from "./steps/destination-and-date-step";
 import { InviteGuestsStep } from "./steps/invite-guests-step";
 import { DateRange } from "react-day-picker";
 import { api } from "../../lib/axios";
+import { toast } from "react-toastify";
 
 export function CreateTripPage() {
   const navigate = useNavigate();
@@ -41,10 +42,12 @@ export function CreateTripPage() {
     const email = data.get("email")?.toString();
 
     if (!email) {
+      toast.warning("Por favor, preencha um email para adicionar");
       return;
     }
 
     if (emailsToInvite.includes(email)) {
+      toast.warning("Email já inserido");
       return;
     }
 
@@ -60,7 +63,7 @@ export function CreateTripPage() {
     setEmailsToInvite(newEmailList);
   };
 
-  const handleCreateTrip = async (event: FormEvent<HTMLFormElement>) => {
+  const handleCreateTrip = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (
       !destination ||
@@ -70,20 +73,28 @@ export function CreateTripPage() {
       !ownerEmail ||
       !ownerName
     ) {
+      toast.warning(
+        "Preencha todos os dados para confirmar a criação da viagem"
+      );
       return;
     }
 
-    const response = await api.post("/trips", {
-      destination: destination,
-      starts_at: eventStartAndDates?.from,
-      ends_at: eventStartAndDates?.to,
-      emails_to_invite: emailsToInvite,
-      owner_name: ownerName,
-      owner_email: ownerEmail,
-    });
-
-    const { tripId } = response.data;
-    navigate(`/trips/${tripId}`);
+    api
+      .post("/trips", {
+        destination: destination,
+        starts_at: eventStartAndDates?.from,
+        ends_at: eventStartAndDates?.to,
+        emails_to_invite: emailsToInvite,
+        owner_name: ownerName,
+        owner_email: ownerEmail,
+      })
+      .then(({ data }) => {
+        const { tripId } = data;
+        navigate(`/trips/${tripId}`);
+      })
+      .catch((e) => {
+        toast.error(e.message);
+      });
   };
 
   return (

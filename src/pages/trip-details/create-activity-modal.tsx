@@ -3,6 +3,7 @@ import { Button } from "../../components/button";
 import { FormEvent } from "react";
 import { api } from "../../lib/axios";
 import { useParams } from "react-router-dom";
+import { toast } from "react-toastify";
 
 interface CreateActivityModalProps {
   handleCreateActivityModalOpen: (value: boolean) => void;
@@ -13,7 +14,7 @@ export function CreateActivityModal({
 }: CreateActivityModalProps) {
   const { tripId } = useParams();
 
-  const createActivity = async (event: FormEvent<HTMLFormElement>) => {
+  const createActivity = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
@@ -21,12 +22,23 @@ export function CreateActivityModal({
     const title = data.get("title")?.toString();
     const occurs_at = data.get("occurs_at")?.toString();
 
-    await api.post(`/trips/${tripId}/activities`, {
-      title,
-      occurs_at,
-    });
+    if (!title) {
+      toast.warning("Adicione um titulo para a atividade");
+    } else if (!occurs_at) {
+      toast.warning("Adicione uma data e hora para a atividade");
+    }
 
-    window.document.location.reload();
+    api
+      .post(`/trips/${tripId}/activities`, {
+        title,
+        occurs_at,
+      })
+      .then(() => {
+        window.document.location.reload();
+      })
+      .catch((e) => {
+        toast.error(e.message);
+      });
   };
 
   return (
