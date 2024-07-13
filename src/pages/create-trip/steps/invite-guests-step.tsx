@@ -13,7 +13,7 @@ export function InviteGuestsStep({
   handleConfirmTripModal,
 }: InviteGuestsStepProps) {
   return (
-    <div className="h-16 bg-zinc-900 px-4 rounded-xl flex items-center shadow-shape gap-3">
+    <div className="bg-zinc-900 px-4 rounded-xl flex md:flex-row flex-col py-3 items-center shadow-shape gap-3">
       <button
         type="button"
         onClick={() => handleChangeGuestsModal(true)}
@@ -31,7 +31,7 @@ export function InviteGuestsStep({
         )}
       </button>
 
-      <div className="w-px h-6 bg-zinc-800"></div>
+      <div className="md:w-px w-full md:h-6 h-px bg-zinc-800" />
 
       <Button onClick={() => handleConfirmTripModal(true)} variant="primary">
         Confirmar viagem

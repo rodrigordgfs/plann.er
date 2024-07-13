@@ -37,29 +37,23 @@ export function DestinationAndDateStep({
       : null;
 
   return (
-    <div className="h-16 bg-zinc-900 px-4 rounded-xl flex items-center shadow-shape gap-3">
+    <div className=" bg-zinc-900 px-4 rounded-xl flex flex-col md:flex-row py-3 items-center shadow-shape gap-3">
       <div className="flex flex-1 items-center gap-2">
         <MapPin className="size-5 text-zinc-400" />
         <input
           disabled={isGuestsInputOpen}
           type="text"
           placeholder="Pra onde você vai?"
-          className="bg-transparent text-lg placeholder-zinc-400 outline-none flex-1"
+          className="bg-transparent text-lg placeholder-zinc-400 outline-none md:flex-1 w-44"
           onChange={(event) => setDestination(event.target.value)}
         />
       </div>
-      <button
-        onClick={() => handleDatePicker(true)}
-        disabled={isGuestsInputOpen}
-        className="flex items-center gap-2 outline-none text-left w-[260px]"
-      >
-        <Calendar className="size-5 text-zinc-400" />
-        <span className="text-lg text-zinc-400 w-40 flex-1">
-          {displayedDate || "Quando?"}
+      <span onClick={() => handleDatePicker(true)} className="flex-1 text-center md:text-left flex items-center justify-center md:justify-start gap-2 cursor-pointer">
+          <Calendar className="size-5 text-zinc-400" />
+          <span className="flex-1 text-lg text-zinc-400">{displayedDate || "Quando?"}</span>
         </span>
-      </button>
 
-      <div className="w-px h-6 bg-zinc-800" />
+      <div className="md:w-px w-full md:h-6 h-px bg-zinc-800" />
 
       {isGuestsInputOpen ? (
         <Button
