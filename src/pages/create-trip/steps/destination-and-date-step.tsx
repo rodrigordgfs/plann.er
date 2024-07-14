@@ -26,6 +26,8 @@ export function DestinationAndDateStep({
 }: DestinationAndDateStepProps) {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
+  const today = new Date();
+
   const handleDatePicker = (value: boolean) => {
     return setIsDatePickerOpen(value);
   };
@@ -108,6 +110,10 @@ export function DestinationAndDateStep({
               mode="range"
               selected={eventStartAndDates}
               onSelect={setEventStartAndDates}
+              disabled={{
+                before: today,
+              }}
+              locale={ptBR}
             />
           </div>
         </div>
