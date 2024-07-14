@@ -1,11 +1,11 @@
 import { MapPin, Calendar, Settings2 } from "lucide-react";
 import { Button } from "../../components/button";
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { ptBR } from "date-fns/locale";
 import { format } from "date-fns";
-import { api } from "../../lib/axios";
-import { toast } from "react-toastify";
+
+interface TripProps {
+  trip: Trip | null;
+}
 
 interface Trip {
   id: string;
@@ -15,20 +15,7 @@ interface Trip {
   is_confirmed: boolean;
 }
 
-export function DestinationAndDateHeader() {
-  const { tripId } = useParams();
-
-  const [trip, setTrip] = useState<Trip | undefined>();
-
-  useEffect(() => {
-    api
-      .get(`/trips/${tripId}`)
-      .then(({ data }) => setTrip(data.trip))
-      .catch((e) => {
-        toast.error(e.message);
-      });
-  }, [tripId]);
-
+export function DestinationAndDateHeader({ trip }: TripProps) {
   const displayedDate = trip
     ? format(trip?.starts_at, "d' de 'LLLL", { locale: ptBR })
         .concat(" até ")

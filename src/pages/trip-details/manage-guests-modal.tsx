@@ -13,16 +13,16 @@ interface Participants {
 
 interface InviteGuestsModalProps {
   handleChangeGuestsModal: (value: boolean) => void;
-  handleRemoveEmailsFromIvites: (email: string) => void;
-  handleAddEmailsFromIvites: (id: string, email: string) => void;
+  handleRemoveGuestInvite: (email: string) => void;
+  handleAddGuestInvite: (id: string, email: string) => void;
   participants: Participants[];
 }
 
 export function ManageGuestsModal({
   participants,
   handleChangeGuestsModal,
-  handleRemoveEmailsFromIvites,
-  handleAddEmailsFromIvites,
+  handleRemoveGuestInvite,
+  handleAddGuestInvite,
 }: InviteGuestsModalProps) {
   const { tripId } = useParams();
 
@@ -38,7 +38,7 @@ export function ManageGuestsModal({
         email,
       })
       .then(({ data }) => {
-        handleAddEmailsFromIvites(data.participantId, email);
+        handleAddGuestInvite(data.participantId, email);
       })
       .catch((e) => {
         toast.error(e.message);
@@ -49,7 +49,7 @@ export function ManageGuestsModal({
     api
       .delete(`/trips/${tripId}/participants/${participantId}`)
       .then(() => {
-        handleRemoveEmailsFromIvites(email);
+        handleRemoveGuestInvite(email);
       })
       .catch((e) => {
         toast.error(e.message);

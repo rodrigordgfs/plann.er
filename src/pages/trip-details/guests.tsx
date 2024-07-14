@@ -1,9 +1,13 @@
 import { CheckCircle2, CircleDashed, UserCog } from "lucide-react";
 import { Button } from "../../components/button";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { api } from "../../lib/axios";
+import { useState } from "react";
 import { ManageGuestsModal } from "./manage-guests-modal";
+
+interface ParticipantsProps {
+  participants: Participants[];
+  handleRemoveGuestInvite: (email: string) => void;
+  handleAddGuestInvite: (id: string, email: string) => void;
+}
 interface Participants {
   id: string;
   name: string | null;
@@ -11,34 +15,16 @@ interface Participants {
   is_confirmed: boolean;
 }
 
-export function Guest() {
-  const { tripId } = useParams();
-
-  const [participants, setParticipants] = useState<Participants[]>([]);
+export function Guest({
+  participants,
+  handleRemoveGuestInvite,
+  handleAddGuestInvite,
+}: ParticipantsProps) {
   const [isManageGuestsModalOpen, setIsManageGuestsModalOpen] = useState(false);
 
   const handleChangeGuestsModal = (value: boolean) => {
     setIsManageGuestsModalOpen(value);
   };
-
-  const handleRemoveEmailsFromIvites = (email: string) => {
-    setParticipants(
-      participants?.filter((participant) => participant.email !== email)
-    );
-  };
-
-  const handleAddEmailsFromIvites = (id: string, email: string) => {
-    setParticipants([
-      ...participants,
-      { id, email, is_confirmed: false, name: null },
-    ]);
-  };
-
-  useEffect(() => {
-    api
-      .get(`/trips/${tripId}/participants`)
-      .then(({ data }) => setParticipants(data));
-  }, [tripId]);
 
   return (
     <>
@@ -82,8 +68,8 @@ export function Guest() {
           participants={participants}
           handleChangeGuestsModal={handleChangeGuestsModal}
           // handleAddEmailToInvite={handleAddEmailToInvite}
-          handleRemoveEmailsFromIvites={handleRemoveEmailsFromIvites}
-          handleAddEmailsFromIvites={handleAddEmailsFromIvites}
+          handleRemoveGuestInvite={handleRemoveGuestInvite}
+          handleAddGuestInvite={handleAddGuestInvite}
         />
       )}
     </>

@@ -1,10 +1,8 @@
 import { Link2, Plus } from "lucide-react";
 import { Button } from "../../components/button";
-import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { api } from "../../lib/axios";
 
 interface ImportantLinksProps {
+  links: Links[];
   handleCreateLinkModalOpen: (value: boolean) => void;
 }
 
@@ -14,17 +12,9 @@ interface Links {
 }
 
 export function ImportantLinks({
+  links,
   handleCreateLinkModalOpen,
 }: ImportantLinksProps) {
-  const { tripId } = useParams();
-  const [links, setLinks] = useState<Links[] | undefined>();
-
-  useEffect(() => {
-    api.get(`/trips/${tripId}/links`).then(({ data }) => {
-      setLinks(data);
-    });
-  }, [tripId]);
-
   return (
     <div className="space-y-6">
       <h2 className="font-semibold text-xl">Links importantes</h2>

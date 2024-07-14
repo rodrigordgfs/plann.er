@@ -1,31 +1,21 @@
 import { CircleCheck } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { api } from "../../lib/axios";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
-interface Activity {
-  id: string;
-  title: string;
-  occurs_at: string;
-  trip_id: string;
+interface ActivitiesProps {
+  activities: Activities;
 }
 
-interface ActivitiesByDate {
-  [date: string]: Activity[];
+interface Activities {
+  [date: string]: {
+    id: string;
+    title: string;
+    occurs_at: string;
+    trip_id: string;
+  }[];
 }
 
-export function Activities() {
-  const { tripId } = useParams();
-  const [activities, setActivities] = useState<ActivitiesByDate | undefined>();
-
-  useEffect(() => {
-    api.get(`/trips/${tripId}/activities`).then(({ data }) => {
-      setActivities(data);
-    });
-  }, [tripId]);
-
+export function Activities({ activities }: ActivitiesProps) {
   return (
     <div className="space-y-8">
       {activities &&
