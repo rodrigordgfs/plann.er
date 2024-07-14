@@ -93,7 +93,7 @@ export function CreateTripPage() {
         navigate(`/trips/${tripId}`);
       })
       .catch((e) => {
-        toast.error(e.message);
+        toast.error(e.response.data.message);
       });
   };
 

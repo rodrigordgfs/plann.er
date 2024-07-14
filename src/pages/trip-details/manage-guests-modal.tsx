@@ -1,8 +1,9 @@
-import { AtSign, Plus, X } from "lucide-react";
-import { FormEvent } from "react";
+import { AtSign, LoaderCircleIcon, Plus, X } from "lucide-react";
+import { FormEvent, useState } from "react";
 import { api } from "../../lib/axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import { Button } from "../../components/button";
 
 interface Participants {
   id: string;
@@ -26,12 +27,21 @@ export function ManageGuestsModal({
 }: InviteGuestsModalProps) {
   const { tripId } = useParams();
 
+  const [savingGuest, setSavingGuest] = useState(false);
+  const [removingGuestId, setRemovingGuestId] = useState<string | null>(null);
+
   const handleInviteGuest = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
 
     const email = data.get("email")?.toString() || "";
+
+    if (!email) {
+      return toast.warning("Adicione um e-mail para o convidado");
+    }
+
+    setSavingGuest(true);
 
     api
       .post(`/trips/${tripId}/invites`, {
@@ -41,18 +51,25 @@ export function ManageGuestsModal({
         handleAddGuestInvite(data.participantId, email);
       })
       .catch((e) => {
-        toast.error(e.message);
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setSavingGuest(false);
       });
   };
 
   const handleRemoveGuest = (participantId: string, email: string) => {
+    setRemovingGuestId(participantId);
     api
       .delete(`/trips/${tripId}/participants/${participantId}`)
       .then(() => {
         handleRemoveGuestInvite(email);
       })
       .catch((e) => {
-        toast.error(e.message);
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setRemovingGuestId(null);
       });
   };
 
@@ -83,12 +100,17 @@ export function ManageGuestsModal({
                 >
                   <span className="text-zinc-300">{participant.email}</span>
                   <button
+                    disabled={removingGuestId === participant.id}
                     type="button"
                     onClick={() =>
                       handleRemoveGuest(participant.id, participant.email)
                     }
                   >
-                    <X className="size-4 text-zinc-400" />
+                    {removingGuestId === participant.id ? (
+                      <LoaderCircleIcon className="size-4 animate-spin text-zinc-400" />
+                    ) : (
+                      <X className="size-4 text-zinc-400" />
+                    )}
                   </button>
                 </div>
               );
@@ -110,13 +132,15 @@ export function ManageGuestsModal({
               className="bg-transparent text-lg placeholder-zinc-400 flex-1 outline-none"
             />
           </div>
-          <button
+          <Button
+            loading={savingGuest}
             type="submit"
-            className="bg-lime-300 hover:bg-lime-400 transition-all text-lime-950 rounded-lg px-5 py-2 font-medium flex items-center gap-2"
+            variant="primary"
+            size="default"
           >
             Convidar
             <Plus className="size-5" />
-          </button>
+          </Button>
         </form>
       </div>
     </div>

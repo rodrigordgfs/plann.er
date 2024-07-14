@@ -1,6 +1,6 @@
 import { Link2, Tag, X } from "lucide-react";
 import { Button } from "../../components/button";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { api } from "../../lib/axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -13,6 +13,8 @@ export function CreateLinkModal({
   handleCreateLinkModalOpen,
 }: CreateLinkModalProps) {
   const { tripId } = useParams();
+
+  const [savingLink, setSavingLink] = useState(false);
 
   const createLink = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -28,6 +30,8 @@ export function CreateLinkModal({
       toast.warning("Adicione uma url para a atividade");
     }
 
+    setSavingLink(true);
+
     api
       .post(`/trips/${tripId}/links`, {
         title,
@@ -37,7 +41,10 @@ export function CreateLinkModal({
         window.document.location.reload();
       })
       .catch((e) => {
-        toast.error(e.message);
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setSavingLink(false);
       });
   };
 
@@ -75,7 +82,12 @@ export function CreateLinkModal({
               className="bg-transparent text-lg placeholder-zinc-400 flex-1 outline-none"
             />
           </div>
-          <Button type="submit" variant="primary" size="full">
+          <Button
+            loading={savingLink}
+            type="submit"
+            variant="primary"
+            size="full"
+          >
             Salvar link
           </Button>
         </form>

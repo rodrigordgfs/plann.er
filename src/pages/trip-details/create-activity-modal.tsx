@@ -1,6 +1,6 @@
 import { Calendar, Tag, X } from "lucide-react";
 import { Button } from "../../components/button";
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { api } from "../../lib/axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -14,6 +14,8 @@ export function CreateActivityModal({
 }: CreateActivityModalProps) {
   const { tripId } = useParams();
 
+  const [savingActivity, setSavingActivity] = useState(false);
+
   const createActivity = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -23,10 +25,12 @@ export function CreateActivityModal({
     const occurs_at = data.get("occurs_at")?.toString();
 
     if (!title) {
-      toast.warning("Adicione um titulo para a atividade");
+      return toast.warning("Adicione um titulo para a atividade");
     } else if (!occurs_at) {
-      toast.warning("Adicione uma data e hora para a atividade");
+      return toast.warning("Adicione uma data e hora para a atividade");
     }
+
+    setSavingActivity(true);
 
     api
       .post(`/trips/${tripId}/activities`, {
@@ -37,7 +41,10 @@ export function CreateActivityModal({
         window.document.location.reload();
       })
       .catch((e) => {
-        toast.error(e.message);
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setSavingActivity(false);
       });
   };
 
@@ -79,7 +86,12 @@ export function CreateActivityModal({
               />
             </div>
           </div>
-          <Button type="submit" variant="primary" size="full">
+          <Button
+            loading={savingActivity}
+            type="submit"
+            variant="primary"
+            size="full"
+          >
             Salvar atividade
           </Button>
         </form>
