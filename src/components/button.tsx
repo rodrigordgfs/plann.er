@@ -1,3 +1,4 @@
+import { LoaderCircleIcon } from "lucide-react";
 import { ComponentProps, ReactNode } from "react";
 import { tv, VariantProps } from "tailwind-variants";
 
@@ -24,12 +25,30 @@ interface ButtonProps
   extends ComponentProps<"button">,
     VariantProps<typeof buttonVariants> {
   children: ReactNode;
+  loading?: boolean;
 }
 
-export function Button({ children, variant, size, ...props }: ButtonProps) {
+export function Button({
+  children,
+  variant,
+  size,
+  loading,
+  ...props
+}: ButtonProps) {
   return (
-    <button {...props} className={buttonVariants({ variant, size })}>
-      {children}
+    <button
+      disabled={loading}
+      {...props}
+      className={buttonVariants({ variant, size })}
+    >
+      {loading ? (
+        <div className="flex items-center gap-2">
+          <LoaderCircleIcon className="size-5 animate-spin" />
+          Por favor, aguarde!
+        </div>
+      ) : (
+        children
+      )}
     </button>
   );
 }
