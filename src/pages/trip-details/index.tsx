@@ -11,8 +11,7 @@ import { CreateLinkModal } from "./create-link-modal";
 export function TripDetailsPage() {
   const [isCreateActivityModalOpen, setIsCreateActivityModalOpen] =
     useState(false);
-  const [isCreateLinkModalOpen, setIsCreateLinkModalOpen] =
-    useState(false);
+  const [isCreateLinkModalOpen, setIsCreateLinkModalOpen] = useState(false);
 
   const handleCreateActivityModalOpen = (value: boolean) => {
     setIsCreateActivityModalOpen(value);
@@ -28,7 +27,7 @@ export function TripDetailsPage() {
 
       <main className="flex flex-col md:flex-row gap-16 px-4">
         <div className="flex-1 space-y-6">
-          <div className="flex items-center justify-between">
+          <div className="flex space-y-2 flex-col sm:flex-row items-center justify-between">
             <h2 className="text-3xl font-semibold">Atividades</h2>
             <Button
               variant="primary"
@@ -43,7 +42,9 @@ export function TripDetailsPage() {
         </div>
 
         <div className="w-full md:w-80 space-y-6">
-          <ImportantLinks handleCreateLinkModalOpen={handleCreateLinkModalOpen} />
+          <ImportantLinks
+            handleCreateLinkModalOpen={handleCreateLinkModalOpen}
+          />
           <div className="w-full h-px bg-zinc-800" />
           <Guest />
         </div>
