@@ -20,9 +20,8 @@ export function CreateTripPage() {
   const [eventStartAndDates, setEventStartAndDates] = useState<
     DateRange | undefined
   >(undefined);
-  const [emailsToInvite, setEmailsToInvite] = useState([
-    "jessica.white44@yahoo.com",
-  ]);
+  const [emailsToInvite, setEmailsToInvite] = useState<string[]>([]);
+  const [loadingConfirmTrip, setLoadingConfirmTrip] = useState(false);
 
   const handleChangeGuestInput = (value: boolean) => {
     setIsGuestsInputOpen(value);
@@ -65,19 +64,7 @@ export function CreateTripPage() {
 
   const handleCreateTrip = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (
-      !destination ||
-      !eventStartAndDates?.from ||
-      !eventStartAndDates?.to ||
-      emailsToInvite.length === 0 ||
-      !ownerEmail ||
-      !ownerName
-    ) {
-      toast.warning(
-        "Preencha todos os dados para confirmar a criação da viagem"
-      );
-      return;
-    }
+    setLoadingConfirmTrip(true);
 
     api
       .post("/trips", {
@@ -94,6 +81,9 @@ export function CreateTripPage() {
       })
       .catch((e) => {
         toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setLoadingConfirmTrip(false);
       });
   };
 
@@ -113,6 +103,7 @@ export function CreateTripPage() {
             isGuestsInputOpen={isGuestsInputOpen}
             setDestination={setDestination}
             setEventStartAndDates={setEventStartAndDates}
+            destination={destination}
             eventStartAndDates={eventStartAndDates}
           />
 
@@ -154,6 +145,7 @@ export function CreateTripPage() {
           handleCreateTrip={handleCreateTrip}
           setOwnerName={setOwnerName}
           setOwnerEmail={setOwnerEmail}
+          loadingConfirmTrip={loadingConfirmTrip}
         />
       )}
     </div>

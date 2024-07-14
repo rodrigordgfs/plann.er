@@ -5,6 +5,7 @@ import { DateRange, DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import "react-day-picker/dist/style.css";
 import { ptBR } from "date-fns/locale";
+import { toast } from "react-toastify";
 
 interface DestinationAndDateStepProps {
   isGuestsInputOpen: boolean;
@@ -12,6 +13,7 @@ interface DestinationAndDateStepProps {
   setDestination: (destination: string) => void;
   setEventStartAndDates: (dates: DateRange | undefined) => void;
   eventStartAndDates: DateRange | undefined;
+  destination: string;
 }
 
 export function DestinationAndDateStep({
@@ -19,6 +21,7 @@ export function DestinationAndDateStep({
   isGuestsInputOpen,
   setDestination,
   eventStartAndDates,
+  destination,
   setEventStartAndDates,
 }: DestinationAndDateStepProps) {
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
@@ -36,6 +39,20 @@ export function DestinationAndDateStep({
           )
       : null;
 
+  const handleContinue = () => {
+    if (!destination) {
+      return toast.warning("Por favor, preencha o destino");
+    } else if (
+      !eventStartAndDates ||
+      !eventStartAndDates.from ||
+      !eventStartAndDates.to
+    ) {
+      return toast.warning("Por favor, selecione as datas de inicio e fim");
+    } else {
+      handleChangeGuestInput(true);
+    }
+  };
+
   return (
     <div className=" bg-zinc-900 px-4 rounded-xl flex flex-col md:flex-row py-3 items-center shadow-shape gap-3">
       <div className="flex flex-1 items-center gap-2">
@@ -48,10 +65,15 @@ export function DestinationAndDateStep({
           onChange={(event) => setDestination(event.target.value)}
         />
       </div>
-      <span onClick={() => handleDatePicker(true)} className="flex-1 text-center md:text-left flex items-center justify-center md:justify-start gap-2 cursor-pointer">
-          <Calendar className="size-5 text-zinc-400" />
-          <span className="flex-1 text-lg text-zinc-400">{displayedDate || "Quando?"}</span>
+      <span
+        onClick={() => handleDatePicker(true)}
+        className="flex-1 text-center md:text-left flex items-center justify-center md:justify-start gap-2 cursor-pointer"
+      >
+        <Calendar className="size-5 text-zinc-400" />
+        <span className="flex-1 text-lg text-zinc-400">
+          {displayedDate || "Quando?"}
         </span>
+      </span>
 
       <div className="md:w-px w-full md:h-6 h-px bg-zinc-800" />
 
@@ -64,7 +86,7 @@ export function DestinationAndDateStep({
           <Settings2 className="size-5 text-zinc-200" />
         </Button>
       ) : (
-        <Button onClick={() => handleChangeGuestInput(true)} variant="primary">
+        <Button onClick={handleContinue} variant="primary">
           Continuar
           <ArrowRight className="size-5" />
         </Button>

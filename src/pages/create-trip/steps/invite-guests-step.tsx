@@ -26,7 +26,7 @@ export function InviteGuestsStep({
           </span>
         ) : (
           <span className="text-lg text-zinc-400 flex-1 text-left">
-            Quem estará na viagem?
+            Clique aqui para adicionar os participantes
           </span>
         )}
       </button>

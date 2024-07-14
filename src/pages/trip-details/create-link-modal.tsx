@@ -24,10 +24,12 @@ export function CreateLinkModal({
     const title = data.get("title")?.toString();
     const url = data.get("url")?.toString();
 
-    if (!title) {
-      toast.warning("Adicione um titulo para a atividade");
+    if (!title || title.length < 4) {
+      return toast.warning(
+        "Adicione um título para a atividade com no mínimo 4 caracteres"
+      );
     } else if (!url) {
-      toast.warning("Adicione uma url para a atividade");
+      return toast.warning("Adicione uma url para a atividade");
     }
 
     setSavingLink(true);

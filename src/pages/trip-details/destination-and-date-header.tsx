@@ -23,7 +23,7 @@ export function DestinationAndDateHeader({ trip }: TripProps) {
     : null;
 
   return (
-    <div className="px-4 py-3 rounded-xl bg-zinc-900 shadow-shape flex flex-col md:flex-row items-center justify-between space-y-2">
+    <div className="px-4 py-3 rounded-xl bg-zinc-900 shadow-shape flex flex-col md:flex-row items-center justify-between space-y-2 md:space-y-0">
       <div className="flex items-center gap-2">
         <MapPin className="size-5 text-zinc-400" />
         <span className="text-zinc-100 truncate">{trip?.destination}</span>

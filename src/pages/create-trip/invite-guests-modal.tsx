@@ -31,22 +31,28 @@ export function InviteGuestsModal({
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {emailsToInvite.map((email) => {
-            return (
-              <div
-                key={email}
-                className="py-1.5 px-2.5 rounded-md bg-zinc-800 flex items-center gap-2"
-              >
-                <span className="text-zinc-300">{email}</span>
-                <button
-                  type="button"
-                  onClick={() => handleRemoveEmailsFromIvites(email)}
+          {emailsToInvite.length > 0 ? (
+            emailsToInvite.map((email) => {
+              return (
+                <div
+                  key={email}
+                  className="py-1.5 px-2.5 rounded-md bg-zinc-800 flex items-center gap-2"
                 >
-                  <X className="size-4 text-zinc-400" />
-                </button>
-              </div>
-            );
-          })}
+                  <span className="text-zinc-300">{email}</span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveEmailsFromIvites(email)}
+                  >
+                    <X className="size-4 text-zinc-400" />
+                  </button>
+                </div>
+              );
+            })
+          ) : (
+            <p className="text-zinc-500 text-sm">
+              Por favor, digite o email abaixo para convidar um participante
+            </p>
+          )}
         </div>
 
         <div className="w-full h-px bg-zinc-800" />

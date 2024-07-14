@@ -7,6 +7,7 @@ interface ConfirmTripModalProps {
   setOwnerName: (name: string) => void;
   setOwnerEmail: (email: string) => void;
   handleCreateTrip: (event: FormEvent<HTMLFormElement>) => void;
+  loadingConfirmTrip: boolean;
 }
 
 export function ConfirmTripModal({
@@ -14,6 +15,7 @@ export function ConfirmTripModal({
   handleCreateTrip,
   setOwnerEmail,
   setOwnerName,
+  loadingConfirmTrip,
 }: ConfirmTripModalProps) {
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center px-4">
@@ -61,7 +63,12 @@ export function ConfirmTripModal({
               onChange={(event) => setOwnerEmail(event.target.value)}
             />
           </div>
-          <Button type="submit" variant="primary" size="full">
+          <Button
+            loading={loadingConfirmTrip}
+            type="submit"
+            variant="primary"
+            size="full"
+          >
             Confirmar criação da viagem
           </Button>
         </form>
