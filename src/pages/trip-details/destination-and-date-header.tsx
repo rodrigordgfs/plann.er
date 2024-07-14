@@ -36,19 +36,19 @@ export function DestinationAndDateHeader() {
     : null;
 
   return (
-    <div className="px-4 h-16 rounded-xl bg-zinc-900 shadow-shape flex items-center justify-between">
+    <div className="px-4 py-3 rounded-xl bg-zinc-900 shadow-shape flex flex-col md:flex-row items-center justify-between space-y-2">
       <div className="flex items-center gap-2">
         <MapPin className="size-5 text-zinc-400" />
-        <span className="text-zinc-100">{trip?.destination}</span>
+        <span className="text-zinc-100 truncate">{trip?.destination}</span>
       </div>
 
-      <div className="flex items-center space-x-5">
+      <div className="w-full md:w-auto flex flex-col md:flex-row items-center space-x-5 space-y-2">
         <div className="flex items-center gap-2">
           <Calendar className="size-5 text-zinc-400" />
-          <span className="text-zinc-100">{displayedDate}</span>
+          <span className="text-zinc-100 truncate">{displayedDate}</span>
         </div>
 
-        <div className="w-px h-6 bg-zinc-800" />
+        <div className="md:w-px w-full md:h-6 h-px bg-zinc-800" />
 
         <Button variant="secondary">
           Alterar Local/Data
