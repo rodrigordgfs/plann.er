@@ -121,7 +121,7 @@ export function ManageGuestsModal({
 
         <form
           onSubmit={(event) => handleInviteGuest(event)}
-          className="p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2"
+          className="p-2.5 bg-zinc-950 border shadow-shape border-zinc-800 rounded-lg flex items-center gap-2"
         >
           <div className="px-2 flex items-center flex-1 gap-2">
             <AtSign className="size-5 text-zinc-400" />

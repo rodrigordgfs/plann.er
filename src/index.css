@@ -10,6 +10,28 @@ input {
   color-scheme: dark;
 }
 
-.rdp-day_selected, .rdp-day_selected:focus-visible, .rdp-day_selected:hover {
+.rdp-day_selected,
+.rdp-day_selected:focus-visible,
+.rdp-day_selected:hover {
   background-color: #a3e635 !important;
+}
+
+/* Custom scrollbar styles */
+.custom-time-dropdown-scrollbar::-webkit-scrollbar {
+  width: 12px;
+}
+
+.custom-time-dropdown-scrollbar::-webkit-scrollbar-track {
+  background: #2d2d2d; /* Background of the scrollbar track */
+  border-radius: 10px;
+}
+
+.custom-time-dropdown-scrollbar::-webkit-scrollbar-thumb {
+  background-color: #a3e635; /* Color of the scrollbar thumb */
+  border-radius: 10px;
+  border: 3px solid #2d2d2d; /* Creates padding around thumb */
+}
+
+.custom-time-dropdown-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: #6e6e6e; /* Color of the scrollbar thumb on hover */
 }

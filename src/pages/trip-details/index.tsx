@@ -132,6 +132,8 @@ export function TripDetailsPage() {
       {isCreateActivityModalOpen && (
         <CreateActivityModal
           handleCreateActivityModalOpen={handleCreateActivityModalOpen}
+          endDateTrip={trip?.ends_at}
+          startDateTrip={trip?.starts_at}
         />
       )}
 
