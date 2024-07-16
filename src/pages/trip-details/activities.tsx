@@ -25,9 +25,9 @@ export function Activities() {
               {Array.isArray(activities[date]) &&
               activities[date].length > 0 ? (
                 <div className="space-y-2.5">
-                  {activities[date].map((activity: Activity) => {
+                  {activities[date].map((activity: Activity, index: number) => {
                     return (
-                      <div key={activity.id}>
+                      <div key={`${activity.id}${index.toString()}`}>
                         <div
                           onClick={() =>
                             handleUpdateActivityModalOpen(true, activity)

@@ -1,7 +1,6 @@
 import { Calendar, Tag, X } from "lucide-react";
 import { Button } from "../../components/button";
 import { FormEvent, useState } from "react";
-import { api } from "../../lib/axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { TimePicker } from "../../components/timePicker";
@@ -12,10 +11,13 @@ import useTripContext from "../../hooks/use-trip-context";
 
 export function CreateActivityModal() {
   const { tripId } = useParams();
-  const { trip, handleActivityModalOpen, handleAddNewActivity } =
-    useTripContext();
+  const {
+    trip,
+    handleActivityModalOpen,
+    handleAddNewActivity,
+    savingActivity,
+  } = useTripContext();
 
-  const [savingActivity, setSavingActivity] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date>();
   const [selectedTime, setSelectedTime] = useState<string>("");
@@ -45,23 +47,7 @@ export function CreateActivityModal() {
       return toast.warning("Adicione uma data e hora para a atividade");
     }
 
-    setSavingActivity(true);
-
-    api
-      .post(`/trips/${tripId}/activities`, {
-        title,
-        occurs_at,
-      })
-      .then(({ data }) => {
-        handleAddNewActivity(format(data.occurs_at, "yyyy-MM-dd"), data);
-        handleActivityModalOpen(false);
-      })
-      .catch((e) => {
-        toast.error(e.response.data.message);
-      })
-      .finally(() => {
-        setSavingActivity(false);
-      });
+    handleAddNewActivity(tripId, title, occurs_at);
   };
 
   const displayedDate = selectedDate

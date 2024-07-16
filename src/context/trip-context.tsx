@@ -2,6 +2,7 @@ import { createContext, FC, ReactNode, useState, useCallback } from "react";
 import { api } from "../lib/axios";
 import { toast } from "react-toastify";
 import axios from "axios";
+import { format } from "date-fns";
 
 interface Trip {
   id: string;
@@ -39,35 +40,55 @@ export interface TripContextType {
   activities: Activities;
   links: Link[];
   participants: Participant[];
-  handleAddGuestInvite: (id: string, email: string) => void;
-  handleRemoveGuestInvite: (email: string) => void;
+  updatingActivity: boolean;
+  togglingActivityDone: boolean;
   isActivityModalOpen: boolean;
-  handleActivityModalOpen: (value: boolean) => void;
-  handleAddNewActivity: (
-    date: string,
-    activity: {
-      id: string;
-      title: string;
-      occurs_at: string;
-      trip_id: string;
-      is_done: boolean;
-    }
-  ) => void;
   isLinkModalOpen: boolean;
-  handleLinkModalOpen: (value: boolean) => void;
-  handleAddNewLink: (newLink: Link) => void;
-  handleFetchTripData: (tripId: string | undefined) => Promise<void>;
   isLoadingTripData: boolean;
   isUpdateActivityModalOpen: boolean;
+  activitySelected: Activity | null;
+  savingLink: boolean;
+  savingGuest: boolean;
+  isManageGuestsModalOpen: boolean;
+  savingActivity: boolean;
+  isUpdateDestinationTripDateModalOpen: boolean;
+  updatingTrip: boolean;
+  handleAddGuestInvite: (tripId: string | undefined, email: string) => void;
+  handleRemoveGuestInvite: (email: string) => void;
+  handleActivityModalOpen: (value: boolean) => void;
+  handleAddNewActivity: (
+    dtripId: string | undefined,
+    title: string,
+    occurs_at: string
+  ) => void;
+  handleLinkModalOpen: (value: boolean) => void;
+  handleAddNewLink: (
+    tripId: string | undefined,
+    title: string,
+    url: string
+  ) => void;
+  handleFetchTripData: (tripId: string | undefined) => Promise<void>;
   handleUpdateActivityModalOpen: (
     value: boolean,
     activity: Activity | null
   ) => void;
-  activitySelected: Activity | null;
   handleToogleActivityDone: (
     tripId: string | undefined,
     activityId: string | undefined,
     is_done: boolean
+  ) => void;
+  handleFetchUpdateActivity: (
+    activityId: string | undefined,
+    title: string,
+    occurs_at: string
+  ) => void;
+  handleChangeGuestsModal: (value: boolean) => void;
+  handleUpdateDestinationAndTripDateModalOpen: (value: boolean) => void;
+  handleUpdateTrip: (
+    tripId: string | undefined,
+    destination: string | undefined,
+    starts_at: Date | undefined,
+    ends_at: Date | undefined
   ) => void;
 }
 
@@ -90,6 +111,17 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   );
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [isLoadingTripData, setIsLoadingTripData] = useState(false);
+  const [updatingActivity, setUpdatingActivity] = useState(false);
+  const [togglingActivityDone, setTogglingActivityDone] = useState(false);
+  const [savingLink, setSavingLink] = useState(false);
+  const [savingGuest, setSavingGuest] = useState(false);
+  const [isManageGuestsModalOpen, setIsManageGuestsModalOpen] = useState(false);
+  const [savingActivity, setSavingActivity] = useState(false);
+  const [updatingTrip, setUpdatingTrip] = useState(false);
+  const [
+    isUpdateDestinationTripDateModalOpen,
+    setIsUpdateDestinationTripDateModalOpen,
+  ] = useState(false);
 
   const handleActivityModalOpen = (value: boolean) => {
     setIsActivityModalOpen(value);
@@ -99,8 +131,29 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     setIsLinkModalOpen(value);
   };
 
-  const handleAddNewLink = (newLink: Link) => {
-    setLinks((prevLinks) => [...prevLinks, newLink]);
+  const handleAddNewLink = (
+    tripId: string | undefined,
+    title: string,
+    url: string
+  ) => {
+    setSavingLink(true);
+
+    api
+      .post(`/trips/${tripId}/links`, {
+        title,
+        url,
+      })
+      .then(({ data }) => {
+        setLinks((prevLinks) => [...prevLinks, data]);
+        handleLinkModalOpen(false);
+        toast.success("Link adicionado com sucesso");
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setSavingLink(false);
+      });
   };
 
   const handleUpdateActivityModalOpen = (
@@ -111,21 +164,58 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     setActivitySelected(activity);
   };
 
-  const handleAddNewActivity = (date: string, newActivity: Activity) => {
-    setActivities((prevActivities) => {
-      const activitiesForDate = prevActivities[date] || [];
-      return {
-        ...prevActivities,
-        [date]: [...activitiesForDate, newActivity],
-      };
-    });
+  const handleAddNewActivity = (
+    tripId: string | undefined,
+    title: string,
+    occurs_at: string
+  ) => {
+    setSavingActivity(true);
+
+    api
+      .post(`/trips/${tripId}/activities`, {
+        title,
+        occurs_at,
+      })
+      .then(({ data }) => {
+        setActivities((prevActivities) => {
+          const activitiesForDate =
+            prevActivities[format(data.occurs_at, "yyyy-MM-dd")] || [];
+          return {
+            ...prevActivities,
+            [format(data.occurs_at, "yyyy-MM-dd")]: [
+              ...activitiesForDate,
+              data,
+            ],
+          };
+        });
+
+        handleActivityModalOpen(false);
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setSavingActivity(false);
+      });
   };
 
-  const handleAddGuestInvite = (id: string, email: string) => {
-    setParticipants([
-      ...participants,
-      { id, email, is_confirmed: false, name: null },
-    ]);
+  const handleAddGuestInvite = (tripId: string | undefined, email: string) => {
+    setSavingGuest(true);
+
+    api
+      .post(`/trips/${tripId}/invites`, {
+        email,
+      })
+      .then(({ data }) => {
+        setParticipants([...participants, data]);
+        toast.success("Convidado adicionado com sucesso");
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setSavingGuest(false);
+      });
   };
 
   const handleRemoveGuestInvite = (email: string) => {
@@ -167,6 +257,38 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     []
   );
 
+  const handleFetchUpdateActivity = async (
+    activityId: string | undefined,
+    title: string,
+    occurs_at: string
+  ) => {
+    if (!trip?.id || !activityId) return;
+
+    setUpdatingActivity(true);
+
+    try {
+      await api.put(`/trips/${trip.id}/activities/${activityId}`, {
+        title,
+        occurs_at,
+      });
+
+      const { data } = await api.get(`/trips/${trip.id}/activities`);
+
+      setActivities(data);
+
+      handleUpdateActivityModalOpen(false, null);
+      toast.success("Atividade atualizada com sucesso");
+    } catch (e) {
+      if (axios.isAxiosError(e)) {
+        toast.error(e.response?.data?.message || "Erro ao atualizar atividade");
+      } else {
+        toast.error("Ocorreu um erro inesperado");
+      }
+    } finally {
+      setUpdatingActivity(false);
+    }
+  };
+
   const handleToogleActivityDone = async (
     tripId: string | undefined,
     activityId: string | undefined,
@@ -174,6 +296,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   ) => {
     if (!tripId || !activityId) return;
 
+    setTogglingActivityDone(true);
     try {
       await api.patch(`/trips/${tripId}/activities/${activityId}/toggle`, {
         is_done,
@@ -193,6 +316,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
           activity.id === activityId ? { ...activity, is_done } : activity
         );
 
+        handleUpdateActivityModalOpen(false, null);
         return newActivities;
       });
     } catch (error) {
@@ -203,7 +327,62 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
       } else {
         toast.error("Ocorreu um erro inesperado");
       }
+    } finally {
+      setTogglingActivityDone(false);
     }
+  };
+
+  const handleChangeGuestsModal = (value: boolean) => {
+    setIsManageGuestsModalOpen(value);
+  };
+
+  const handleUpdateDestinationAndTripDateModalOpen = (value: boolean) => {
+    setIsUpdateDestinationTripDateModalOpen(value);
+  };
+
+  const handleUpdateTrip = (
+    tripId: string | undefined,
+    destination: string | undefined,
+    starts_at: Date | undefined,
+    ends_at: Date | undefined
+  ) => {
+    setUpdatingTrip(true);
+
+    api
+      .put(`/trips/${tripId}`, {
+        destination,
+        starts_at,
+        ends_at,
+      })
+      .then(() => {
+        Promise.all([
+          api.get(`/trips/${tripId}`),
+          api.get(`/trips/${tripId}/activities`),
+        ])
+          .then(([{ data: tripData }, { data: activitiesData }]) => {
+            setTrip(tripData);
+            setActivities(activitiesData);
+            setIsUpdateDestinationTripDateModalOpen(false);
+          })
+          .catch((e) => {
+            if (axios.isAxiosError(e)) {
+              toast.error(
+                e.response?.data?.message || "Erro ao carregar dados da viagem"
+              );
+            } else {
+              toast.error("Ocorreu um erro inesperado");
+            }
+          })
+          .finally(() => {
+            setUpdatingTrip(false);
+          });
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setUpdatingTrip(false);
+      });
   };
 
   return (
@@ -227,6 +406,18 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         handleUpdateActivityModalOpen,
         activitySelected,
         handleToogleActivityDone,
+        handleFetchUpdateActivity,
+        updatingActivity,
+        togglingActivityDone,
+        savingLink,
+        savingGuest,
+        isManageGuestsModalOpen,
+        handleChangeGuestsModal,
+        savingActivity,
+        isUpdateDestinationTripDateModalOpen,
+        handleUpdateDestinationAndTripDateModalOpen,
+        updatingTrip,
+        handleUpdateTrip,
       }}
     >
       {children}

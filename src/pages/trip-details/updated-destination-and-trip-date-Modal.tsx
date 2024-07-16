@@ -1,37 +1,30 @@
 import { Calendar, Tag, X } from "lucide-react";
 import { Button } from "../../components/button";
 import { FormEvent, useState } from "react";
-import { api } from "../../lib/axios";
 import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 import { DateRange, DayPicker } from "react-day-picker";
 import { ptBR } from "date-fns/locale";
 import { format } from "date-fns";
+import useTripContext from "../../hooks/use-trip-context";
 
-interface UpdateDestinationAndTripDateModalProps {
-  handleUpdateDestinationAndTripDateModalOpen: (value: boolean) => void;
-  destination: string | undefined;
-  starts_at: string | undefined;
-  ends_at: string | undefined;
-}
-
-export function UpdateDestinationAndTripDateModal({
-  handleUpdateDestinationAndTripDateModalOpen,
-  destination,
-  starts_at,
-  ends_at,
-}: UpdateDestinationAndTripDateModalProps) {
+export function UpdateDestinationAndTripDateModal() {
   const { tripId } = useParams();
+
+  const {
+    trip,
+    handleUpdateDestinationAndTripDateModalOpen,
+    updatingTrip,
+    handleUpdateTrip,
+  } = useTripContext();
 
   const today = new Date();
 
-  const [updatingTrip, setUpdatingTrip] = useState(false);
-  const [newDestination, setNewDestination] = useState(destination);
+  const [newDestination, setNewDestination] = useState(trip?.destination);
   const [newEventStartAndDates, setNewEventStartAndDates] = useState<
     DateRange | undefined
   >({
-    from: new Date(starts_at || today),
-    to: new Date(ends_at || today),
+    from: new Date(trip?.starts_at || today),
+    to: new Date(trip?.ends_at || today),
   });
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
 
@@ -48,23 +41,13 @@ export function UpdateDestinationAndTripDateModal({
 
   const updateTrip = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    setUpdatingTrip(true);
 
-    api
-      .put(`/trips/${tripId}`, {
-        destination: newDestination,
-        starts_at: newEventStartAndDates?.from,
-        ends_at: newEventStartAndDates?.to,
-      })
-      .then(() => {
-        window.document.location.reload();
-      })
-      .catch((e) => {
-        toast.error(e.response.data.message);
-      })
-      .finally(() => {
-        setUpdatingTrip(false);
-      });
+    handleUpdateTrip(
+      tripId,
+      newDestination,
+      newEventStartAndDates?.from,
+      newEventStartAndDates?.to
+    );
   };
 
   const handleDatePicker = (value: boolean) => {

@@ -1,16 +1,14 @@
 import { Link2, Tag, X } from "lucide-react";
 import { Button } from "../../components/button";
-import { FormEvent, useState } from "react";
-import { api } from "../../lib/axios";
+import { FormEvent } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import useTripContext from "../../hooks/use-trip-context";
 
 export function CreateLinkModal() {
   const { tripId } = useParams();
-  const { handleLinkModalOpen, handleAddNewLink } = useTripContext();
-
-  const [savingLink, setSavingLink] = useState(false);
+  const { handleLinkModalOpen, handleAddNewLink, savingLink } =
+    useTripContext();
 
   const createLink = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -28,24 +26,7 @@ export function CreateLinkModal() {
       return toast.warning("Adicione uma url para a atividade");
     }
 
-    setSavingLink(true);
-
-    api
-      .post(`/trips/${tripId}/links`, {
-        title,
-        url,
-      })
-      .then(({ data }) => {
-        handleAddNewLink(data);
-        handleLinkModalOpen(false);
-        toast.success("Link adicionado com sucesso");
-      })
-      .catch((e) => {
-        toast.error(e.response.data.message);
-      })
-      .finally(() => {
-        setSavingLink(false);
-      });
+    handleAddNewLink(tripId, title, url);
   };
 
   return (

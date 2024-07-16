@@ -1,7 +1,6 @@
 import { Calendar, Tag, X } from "lucide-react";
 import { Button } from "../../components/button";
 import { FormEvent, useState } from "react";
-import { api } from "../../lib/axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { TimePicker } from "../../components/timePicker";
@@ -17,13 +16,14 @@ export function UpdateActivityModal() {
     trip,
     activitySelected,
     handleUpdateActivityModalOpen,
-    handleAddNewActivity,
     handleToogleActivityDone,
+    handleFetchUpdateActivity,
+    updatingActivity,
+    togglingActivityDone,
   } = useTripContext();
 
   const [activity] = useState<Activity | null>(activitySelected);
-  const [updatingActivity, setUpdatingActivity] = useState(false);
-  const [togglingActivityDone, setTogglingActivityDone] = useState(false);
+  const [title, setTitle] = useState<string>(activity?.title || ""); // Estado para o título
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     activity?.occurs_at ? new Date(activity?.occurs_at) : undefined
@@ -40,46 +40,21 @@ export function UpdateActivityModal() {
     setSelectedTime(time);
   };
 
-  const toggleActivtyDone = async () => {
-    setTogglingActivityDone(true);
-    await handleToogleActivityDone(tripId, activity?.id, !activity?.is_done);
-    handleUpdateActivityModalOpen(false, null);
-  };
-
-  const createActivity = (event: FormEvent<HTMLFormElement>) => {
+  const updateActivity = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const data = new FormData(event.currentTarget);
-
-    const title = data.get("title")?.toString();
     const occurs_at =
       selectedDate && selectedTime
         ? `${format(selectedDate, "yyyy-MM-dd")}T${selectedTime}:00`
         : null;
 
     if (!title) {
-      return toast.warning("Adicione um titulo para a atividade");
+      return toast.warning("Adicione um título para a atividade");
     } else if (!occurs_at) {
       return toast.warning("Adicione uma data e hora para a atividade");
     }
 
-    setUpdatingActivity(true);
-
-    api
-      .post(`/trips/${tripId}/activities`, {
-        title,
-        occurs_at,
-      })
-      .then(({ data }) => {
-        handleAddNewActivity(format(data.occurs_at, "yyyy-MM-dd"), data);
-        handleUpdateActivityModalOpen(false, null);
-      })
-      .catch((e) => {
-        toast.error(e.response.data.message);
-      })
-      .finally(() => {
-        setUpdatingActivity(false);
-      });
+    handleFetchUpdateActivity(activity?.id, title, occurs_at);
   };
 
   const displayedDate = selectedDate
@@ -107,11 +82,12 @@ export function UpdateActivityModal() {
             </p>
           </div>
 
-          <form onSubmit={createActivity} className="space-y-3">
+          <form onSubmit={updateActivity} className="space-y-3">
             <div className="h-14 px-4 bg-zinc-950 border border-zinc-800 rounded-lg shadow-shape flex items-center gap-2">
               <Tag className="size-5 text-zinc-400" />
               <input
-                value={activity?.title}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)} // Atualizando o estado do título
                 type="text"
                 name="title"
                 placeholder="Qual a atividade?"
@@ -139,7 +115,13 @@ export function UpdateActivityModal() {
             </div>
             <div className="flex flex-col sm:flex-row items-center gap-2">
               <Button
-                onClick={toggleActivtyDone}
+                onClick={() =>
+                  handleToogleActivityDone(
+                    tripId,
+                    activity?.id,
+                    !activity?.is_done
+                  )
+                }
                 loading={togglingActivityDone}
                 disabled={updatingActivity || togglingActivityDone}
                 type="button"
@@ -176,11 +158,7 @@ export function UpdateActivityModal() {
 
             <DayPicker
               mode="single"
-              selected={
-                activity?.occurs_at
-                  ? new Date(activity?.occurs_at)
-                  : selectedDate
-              }
+              selected={selectedDate}
               onSelect={setSelectedDate}
               disabled={(date) => {
                 if (startDate && endDate) {

@@ -3,26 +3,20 @@ import { Button } from "../../components/button";
 import { ptBR } from "date-fns/locale";
 import { format } from "date-fns";
 import { UpdateDestinationAndTripDateModal } from "./updated-destination-and-trip-date-Modal";
-import { useState } from "react";
 import useTripContext from "../../hooks/use-trip-context";
 
 export function DestinationAndDateHeader() {
-  const { trip } = useTripContext();
+  const {
+    trip,
+    isUpdateDestinationTripDateModalOpen,
+    handleUpdateDestinationAndTripDateModalOpen,
+  } = useTripContext();
 
   const displayedDate = trip
     ? format(trip?.starts_at, "d' de 'LLLL", { locale: ptBR })
         .concat(" até ")
         .concat(format(trip?.ends_at, "d' de 'LLLL", { locale: ptBR }))
     : null;
-
-  const [
-    isUpdateDestinationAndTripDateModalOpen,
-    setIsUpdateDestinationAndTripDateModalOpen,
-  ] = useState(false);
-
-  const handleUpdateDestinationAndTripDateModalOpen = (value: boolean) => {
-    setIsUpdateDestinationAndTripDateModalOpen(value);
-  };
 
   return (
     <>
@@ -50,15 +44,8 @@ export function DestinationAndDateHeader() {
         </div>
       </div>
 
-      {isUpdateDestinationAndTripDateModalOpen && (
-        <UpdateDestinationAndTripDateModal
-          handleUpdateDestinationAndTripDateModalOpen={
-            handleUpdateDestinationAndTripDateModalOpen
-          }
-          destination={trip?.destination}
-          ends_at={trip?.ends_at}
-          starts_at={trip?.starts_at}
-        />
+      {isUpdateDestinationTripDateModalOpen && (
+        <UpdateDestinationAndTripDateModal />
       )}
     </>
   );

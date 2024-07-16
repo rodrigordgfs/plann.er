@@ -4,30 +4,18 @@ import { api } from "../../lib/axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button } from "../../components/button";
+import useTripContext from "../../hooks/use-trip-context";
 
-interface Participants {
-  id: string;
-  name: string | null;
-  email: string;
-  is_confirmed: boolean;
-}
-
-interface InviteGuestsModalProps {
-  handleChangeGuestsModal: (value: boolean) => void;
-  handleRemoveGuestInvite: (email: string) => void;
-  handleAddGuestInvite: (id: string, email: string) => void;
-  participants: Participants[];
-}
-
-export function ManageGuestsModal({
-  participants,
-  handleChangeGuestsModal,
-  handleRemoveGuestInvite,
-  handleAddGuestInvite,
-}: InviteGuestsModalProps) {
+export function ManageGuestsModal() {
   const { tripId } = useParams();
 
-  const [savingGuest, setSavingGuest] = useState(false);
+  const {
+    savingGuest,
+    handleAddGuestInvite,
+    handleChangeGuestsModal,
+    participants,
+    handleRemoveGuestInvite,
+  } = useTripContext();
   const [removingGuestId, setRemovingGuestId] = useState<string | null>(null);
 
   const handleInviteGuest = (event: FormEvent<HTMLFormElement>) => {
@@ -41,22 +29,7 @@ export function ManageGuestsModal({
       return toast.warning("Adicione um e-mail para o convidado");
     }
 
-    setSavingGuest(true);
-
-    api
-      .post(`/trips/${tripId}/invites`, {
-        email,
-      })
-      .then(({ data }) => {
-        handleAddGuestInvite(data.participantId, email);
-        toast.success("Convidado adicionado com sucesso");
-      })
-      .catch((e) => {
-        toast.error(e.response.data.message);
-      })
-      .finally(() => {
-        setSavingGuest(false);
-      });
+    handleAddGuestInvite(tripId, email);
   };
 
   const handleRemoveGuest = (participantId: string, email: string) => {
