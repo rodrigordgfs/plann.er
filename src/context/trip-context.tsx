@@ -178,6 +178,9 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
       await api.patch(`/trips/${tripId}/activities/${activityId}/toggle`, {
         is_done,
       });
+      toast.success(
+        `Atividade ${is_done ? "marcada" : "desmarcada"} com sucesso`
+      );
       setActivities((prevActivities) => {
         const newActivities = { ...prevActivities };
         const date = Object.keys(newActivities).find((date) =>
