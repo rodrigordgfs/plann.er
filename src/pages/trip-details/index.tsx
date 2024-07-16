@@ -9,6 +9,7 @@ import { Button } from "../../components/button";
 import { CreateLinkModal } from "./create-link-modal";
 import { useParams } from "react-router-dom";
 import useTripContext from "../../hooks/use-trip-context";
+import { UpdateActivityModal } from "./update-activity-modal";
 
 export function TripDetailsPage() {
   const { tripId } = useParams();
@@ -18,6 +19,7 @@ export function TripDetailsPage() {
     isLinkModalOpen,
     handleFetchTripData,
     isLoadingTripData,
+    isUpdateActivityModalOpen,
   } = useTripContext();
 
   useEffect(() => {
@@ -63,6 +65,8 @@ export function TripDetailsPage() {
           </main>
 
           {isActivityModalOpen && <CreateActivityModal />}
+
+          {isUpdateActivityModalOpen && <UpdateActivityModal />}
 
           {isLinkModalOpen && <CreateLinkModal />}
         </div>

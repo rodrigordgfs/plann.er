@@ -11,14 +11,15 @@ interface Trip {
   is_confirmed: boolean;
 }
 
-interface Activity {
-  [date: string]: {
-    id: string;
-    title: string;
-    occurs_at: string;
-    trip_id: string;
-    is_done: boolean;
-  }[];
+export interface Activity {
+  id: string;
+  title: string;
+  occurs_at: string;
+  trip_id: string;
+  is_done: boolean;
+}
+interface Activities {
+  [date: string]: Activity[];
 }
 
 interface Link {
@@ -35,7 +36,7 @@ interface Participant {
 
 export interface TripContextType {
   trip: Trip | null;
-  activities: Activity;
+  activities: Activities;
   links: Link[];
   participants: Participant[];
   handleAddGuestInvite: (id: string, email: string) => void;
@@ -57,6 +58,17 @@ export interface TripContextType {
   handleAddNewLink: (newLink: Link) => void;
   handleFetchTripData: (tripId: string | undefined) => Promise<void>;
   isLoadingTripData: boolean;
+  isUpdateActivityModalOpen: boolean;
+  handleUpdateActivityModalOpen: (
+    value: boolean,
+    activity: Activity | null
+  ) => void;
+  activitySelected: Activity | null;
+  handleToogleActivityDone: (
+    tripId: string | undefined,
+    activityId: string | undefined,
+    is_done: boolean
+  ) => void;
 }
 
 export const TripContext = createContext<TripContextType | undefined>(
@@ -67,10 +79,15 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [trip, setTrip] = useState<Trip | null>(null);
-  const [activities, setActivities] = useState<Activity>({});
+  const [activities, setActivities] = useState<Activities>({});
   const [links, setLinks] = useState<Link[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [isUpdateActivityModalOpen, setIsUpdateActivityModalOpen] =
+    useState(false);
+  const [activitySelected, setActivitySelected] = useState<Activity | null>(
+    null
+  );
   const [isLinkModalOpen, setIsLinkModalOpen] = useState(false);
   const [isLoadingTripData, setIsLoadingTripData] = useState(false);
 
@@ -86,16 +103,15 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     setLinks((prevLinks) => [...prevLinks, newLink]);
   };
 
-  const handleAddNewActivity = (
-    date: string,
-    newActivity: {
-      id: string;
-      title: string;
-      occurs_at: string;
-      trip_id: string;
-      is_done: boolean;
-    }
+  const handleUpdateActivityModalOpen = (
+    value: boolean,
+    activity: Activity | null
   ) => {
+    setIsUpdateActivityModalOpen(value);
+    setActivitySelected(activity);
+  };
+
+  const handleAddNewActivity = (date: string, newActivity: Activity) => {
     setActivities((prevActivities) => {
       const activitiesForDate = prevActivities[date] || [];
       return {
@@ -151,6 +167,42 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     []
   );
 
+  const handleToogleActivityDone = async (
+    tripId: string | undefined,
+    activityId: string | undefined,
+    is_done: boolean
+  ) => {
+    if (!tripId || !activityId) return;
+
+    try {
+      await api.patch(`/trips/${tripId}/activities/${activityId}/toggle`, {
+        is_done,
+      });
+      setActivities((prevActivities) => {
+        const newActivities = { ...prevActivities };
+        const date = Object.keys(newActivities).find((date) =>
+          newActivities[date].some((activity) => activity.id === activityId)
+        );
+
+        if (!date) return prevActivities;
+
+        newActivities[date] = newActivities[date].map((activity) =>
+          activity.id === activityId ? { ...activity, is_done } : activity
+        );
+
+        return newActivities;
+      });
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        toast.error(
+          error.response?.data?.message || "Erro ao atualizar atividade"
+        );
+      } else {
+        toast.error("Ocorreu um erro inesperado");
+      }
+    }
+  };
+
   return (
     <TripContext.Provider
       value={{
@@ -168,6 +220,10 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         handleAddNewLink,
         handleFetchTripData,
         isLoadingTripData,
+        isUpdateActivityModalOpen,
+        handleUpdateActivityModalOpen,
+        activitySelected,
+        handleToogleActivityDone,
       }}
     >
       {children}

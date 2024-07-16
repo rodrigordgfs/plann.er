@@ -4,12 +4,13 @@ import times from "../utils/times";
 
 interface TimePickerProps {
   handleSelectedTime: (time: string) => void;
+  value?: string | "";
 }
 
 const dayTimes = times();
 
-export function TimePicker({ handleSelectedTime }: TimePickerProps) {
-  const [selectedTime, setSelectedTime] = useState<string>("");
+export function TimePicker({ handleSelectedTime, value }: TimePickerProps) {
+  const [selectedTime, setSelectedTime] = useState<string>(value || "");
   const [showDropdown, setShowDropdown] = useState<boolean>(false);
 
   const formatTime = (time: string): string => {
