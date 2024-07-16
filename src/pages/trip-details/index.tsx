@@ -29,9 +29,9 @@ export function TripDetailsPage() {
   return (
     <>
       {isLoadingTripData ? (
-        <div className="w-full h-screen bg-zinc-900 flex flex-col items-center justify-center gap-2">
+        <div className="w-full h-screen bg-zinc-900 flex flex-col items-center justify-center gap-2 px-4">
           <LoaderCircleIcon className="size-10 animate-spin" />
-          <p className="text-lg font-semibold">
+          <p className="text-lg font-semibold text-center">
             Carregando dados da viagem! Por favor, aguarde!
           </p>
         </div>
