@@ -8,19 +8,17 @@ import { TimePicker } from "../../components/timePicker";
 import { DayPicker } from "react-day-picker";
 import { ptBR } from "date-fns/locale";
 import { format } from "date-fns";
+import useTripContext from "../../hooks/use-trip-context";
 
 interface CreateActivityModalProps {
   handleCreateActivityModalOpen: (value: boolean) => void;
-  startDateTrip: string | undefined;
-  endDateTrip: string | undefined;
 }
 
 export function CreateActivityModal({
   handleCreateActivityModalOpen,
-  startDateTrip,
-  endDateTrip,
 }: CreateActivityModalProps) {
   const { tripId } = useParams();
+  const { trip } = useTripContext();
 
   const [savingActivity, setSavingActivity] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
@@ -74,8 +72,8 @@ export function CreateActivityModal({
     ? format(selectedDate, "d' de 'LLLL", { locale: ptBR })
     : null;
 
-  const startDate = startDateTrip ? new Date(startDateTrip) : undefined;
-  const endDate = endDateTrip ? new Date(endDateTrip) : undefined;
+  const startDate = trip?.starts_at ? new Date(trip?.starts_at) : undefined;
+  const endDate = trip?.ends_at ? new Date(trip?.ends_at) : undefined;
 
   return (
     <>

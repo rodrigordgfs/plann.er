@@ -2,24 +2,19 @@ import { CheckCircle2, CircleDashed, UserCog } from "lucide-react";
 import { Button } from "../../components/button";
 import { useState } from "react";
 import { ManageGuestsModal } from "./manage-guests-modal";
+import useTripContext from "../../hooks/use-trip-context";
 
 interface ParticipantsProps {
-  participants: Participants[];
   handleRemoveGuestInvite: (email: string) => void;
   handleAddGuestInvite: (id: string, email: string) => void;
 }
-interface Participants {
-  id: string;
-  name: string | null;
-  email: string;
-  is_confirmed: boolean;
-}
 
 export function Guest({
-  participants,
   handleRemoveGuestInvite,
   handleAddGuestInvite,
 }: ParticipantsProps) {
+  const { participants } = useTripContext();
+
   const [isManageGuestsModalOpen, setIsManageGuestsModalOpen] = useState(false);
 
   const handleChangeGuestsModal = (value: boolean) => {

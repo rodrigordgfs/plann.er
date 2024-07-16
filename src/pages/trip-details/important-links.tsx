@@ -1,20 +1,16 @@
 import { Link2, Plus } from "lucide-react";
 import { Button } from "../../components/button";
+import useTripContext from "../../hooks/use-trip-context";
 
 interface ImportantLinksProps {
-  links: Links[];
   handleCreateLinkModalOpen: (value: boolean) => void;
 }
 
-interface Links {
-  title: string;
-  url: string;
-}
-
 export function ImportantLinks({
-  links,
   handleCreateLinkModalOpen,
 }: ImportantLinksProps) {
+  const { links } = useTripContext();
+
   return (
     <div className="space-y-6">
       <h2 className="font-semibold text-xl">Links importantes</h2>

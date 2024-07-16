@@ -4,20 +4,11 @@ import { ptBR } from "date-fns/locale";
 import { format } from "date-fns";
 import { UpdateDestinationAndTripDateModal } from "./updated-destination-and-trip-date-Modal";
 import { useState } from "react";
+import useTripContext from "../../hooks/use-trip-context";
 
-interface TripProps {
-  trip: Trip | null;
-}
+export function DestinationAndDateHeader() {
+  const { trip } = useTripContext();
 
-interface Trip {
-  id: string;
-  destination: string;
-  starts_at: string;
-  ends_at: string;
-  is_confirmed: boolean;
-}
-
-export function DestinationAndDateHeader({ trip }: TripProps) {
   const displayedDate = trip
     ? format(trip?.starts_at, "d' de 'LLLL", { locale: ptBR })
         .concat(" até ")

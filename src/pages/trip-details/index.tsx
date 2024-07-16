@@ -9,14 +9,7 @@ import { Button } from "../../components/button";
 import { CreateLinkModal } from "./create-link-modal";
 import { useParams } from "react-router-dom";
 import { api } from "../../lib/axios";
-
-interface Trip {
-  id: string;
-  destination: string;
-  starts_at: string;
-  ends_at: string;
-  is_confirmed: boolean;
-}
+import useTripContext from "../../hooks/use-trip-context";
 
 interface Activities {
   [date: string]: {
@@ -27,28 +20,20 @@ interface Activities {
   }[];
 }
 
-interface Links {
-  title: string;
-  url: string;
-}
-
-interface Participants {
-  id: string;
-  name: string | null;
-  email: string;
-  is_confirmed: boolean;
-}
-
 export function TripDetailsPage() {
   const { tripId } = useParams();
+  const {
+    setTrip,
+    setLinks,
+    activities,
+    setActivities,
+    participants,
+    setParticipants,
+  } = useTripContext();
 
   const [isCreateActivityModalOpen, setIsCreateActivityModalOpen] =
     useState(false);
   const [isCreateLinkModalOpen, setIsCreateLinkModalOpen] = useState(false);
-  const [trip, setTrip] = useState<Trip | null>(null);
-  const [activities, setActivities] = useState<Activities>({});
-  const [links, setLinks] = useState<Links[]>([]);
-  const [participants, setParticipants] = useState<Participants[]>([]);
 
   const handleCreateActivityModalOpen = (value: boolean) => {
     setIsCreateActivityModalOpen(value);
@@ -93,11 +78,11 @@ export function TripDetailsPage() {
       );
     };
     fetchTripData();
-  }, [tripId]);
+  }, [tripId, setTrip, setActivities, setLinks, setParticipants]);
 
   return (
     <div className="max-w-6xl px-6 py-10 mx-auto space-y-8">
-      <DestinationAndDateHeader trip={trip} />
+      <DestinationAndDateHeader />
 
       <main className="flex flex-col md:flex-row gap-16 px-4">
         <div className="flex-1 space-y-6">
@@ -118,11 +103,9 @@ export function TripDetailsPage() {
         <div className="w-full md:w-80 space-y-6">
           <ImportantLinks
             handleCreateLinkModalOpen={handleCreateLinkModalOpen}
-            links={links}
           />
           <div className="w-full h-px bg-zinc-800" />
           <Guest
-            participants={participants}
             handleRemoveGuestInvite={handleRemoveGuestInvite}
             handleAddGuestInvite={handleAddGuestInvite}
           />
@@ -132,8 +115,6 @@ export function TripDetailsPage() {
       {isCreateActivityModalOpen && (
         <CreateActivityModal
           handleCreateActivityModalOpen={handleCreateActivityModalOpen}
-          endDateTrip={trip?.ends_at}
-          startDateTrip={trip?.starts_at}
         />
       )}
 
