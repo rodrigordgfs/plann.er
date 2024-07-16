@@ -1,10 +1,4 @@
-import {
-  createContext,
-  FC,
-  ReactNode,
-  useState,
-  useCallback,
-} from "react";
+import { createContext, FC, ReactNode, useState, useCallback } from "react";
 import { api } from "../lib/axios";
 import { toast } from "react-toastify";
 import axios from "axios";
@@ -23,6 +17,7 @@ interface Activity {
     title: string;
     occurs_at: string;
     trip_id: string;
+    is_done: boolean;
   }[];
 }
 
@@ -49,7 +44,13 @@ export interface TripContextType {
   handleActivityModalOpen: (value: boolean) => void;
   handleAddNewActivity: (
     date: string,
-    activity: { id: string; title: string; occurs_at: string; trip_id: string }
+    activity: {
+      id: string;
+      title: string;
+      occurs_at: string;
+      trip_id: string;
+      is_done: boolean;
+    }
   ) => void;
   isLinkModalOpen: boolean;
   handleLinkModalOpen: (value: boolean) => void;
@@ -92,6 +93,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
       title: string;
       occurs_at: string;
       trip_id: string;
+      is_done: boolean;
     }
   ) => {
     setActivities((prevActivities) => {

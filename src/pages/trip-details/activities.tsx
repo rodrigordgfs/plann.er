@@ -1,4 +1,4 @@
-import { CircleCheck } from "lucide-react";
+import { CircleCheck, CircleDashed } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import useTripContext from "../../hooks/use-trip-context";
@@ -28,7 +28,11 @@ export function Activities() {
                     return (
                       <div key={activity.id}>
                         <div className="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 transition-all cursor-pointer rounded-xl shadow-shape flex items-center gap-3">
-                          <CircleCheck className="size-5 text-lime-300" />
+                          {activity.is_done ? (
+                            <CircleCheck className="size-5 text-green-400" />
+                          ) : (
+                            <CircleDashed className="size-5 text-zinc-400" />
+                          )}
                           <span className="text-zinc-100">
                             {activity.title}
                           </span>
