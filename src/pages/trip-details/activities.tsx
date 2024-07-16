@@ -1,21 +1,11 @@
 import { CircleCheck } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import useTripContext from "../../hooks/use-trip-context";
 
-interface ActivitiesProps {
-  activities: Activities;
-}
+export function Activities() {
+  const { activities } = useTripContext();
 
-interface Activities {
-  [date: string]: {
-    id: string;
-    title: string;
-    occurs_at: string;
-    trip_id: string;
-  }[];
-}
-
-export function Activities({ activities }: ActivitiesProps) {
   return (
     <div className="space-y-8">
       {activities &&

@@ -10,15 +10,10 @@ import { ptBR } from "date-fns/locale";
 import { format } from "date-fns";
 import useTripContext from "../../hooks/use-trip-context";
 
-interface CreateActivityModalProps {
-  handleCreateActivityModalOpen: (value: boolean) => void;
-}
-
-export function CreateActivityModal({
-  handleCreateActivityModalOpen,
-}: CreateActivityModalProps) {
+export function CreateActivityModal() {
   const { tripId } = useParams();
-  const { trip } = useTripContext();
+  const { trip, handleActivityModalOpen, handleAddNewActivity } =
+    useTripContext();
 
   const [savingActivity, setSavingActivity] = useState(false);
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
@@ -57,8 +52,9 @@ export function CreateActivityModal({
         title,
         occurs_at,
       })
-      .then(() => {
-        window.document.location.reload();
+      .then(({ data }) => {
+        handleAddNewActivity(format(data.occurs_at, "yyyy-MM-dd"), data);
+        handleActivityModalOpen(false);
       })
       .catch((e) => {
         toast.error(e.response.data.message);
@@ -82,7 +78,7 @@ export function CreateActivityModal({
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-semibold">Nova atividade</h2>
-              <button onClick={() => handleCreateActivityModalOpen(false)}>
+              <button onClick={() => handleActivityModalOpen(false)}>
                 <X className="size-5 text-zinc-400" />
               </button>
             </div>

@@ -4,15 +4,11 @@ import { FormEvent, useState } from "react";
 import { api } from "../../lib/axios";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
+import useTripContext from "../../hooks/use-trip-context";
 
-interface CreateLinkModalProps {
-  handleCreateLinkModalOpen: (value: boolean) => void;
-}
-
-export function CreateLinkModal({
-  handleCreateLinkModalOpen,
-}: CreateLinkModalProps) {
+export function CreateLinkModal() {
   const { tripId } = useParams();
+  const { handleLinkModalOpen, handleAddNewLink } = useTripContext();
 
   const [savingLink, setSavingLink] = useState(false);
 
@@ -39,8 +35,10 @@ export function CreateLinkModal({
         title,
         url,
       })
-      .then(() => {
-        window.document.location.reload();
+      .then(({ data }) => {
+        handleAddNewLink(data);
+        handleLinkModalOpen(false);
+        toast.success("Link adicionado com sucesso");
       })
       .catch((e) => {
         toast.error(e.response.data.message);
@@ -56,7 +54,7 @@ export function CreateLinkModal({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Cadastrar link</h2>
-            <button onClick={() => handleCreateLinkModalOpen(false)}>
+            <button onClick={() => handleLinkModalOpen(false)}>
               <X className="size-5 text-zinc-400" />
             </button>
           </div>

@@ -49,6 +49,7 @@ export function ManageGuestsModal({
       })
       .then(({ data }) => {
         handleAddGuestInvite(data.participantId, email);
+        toast.success("Convidado adicionado com sucesso");
       })
       .catch((e) => {
         toast.error(e.response.data.message);

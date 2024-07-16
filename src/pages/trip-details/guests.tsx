@@ -4,16 +4,9 @@ import { useState } from "react";
 import { ManageGuestsModal } from "./manage-guests-modal";
 import useTripContext from "../../hooks/use-trip-context";
 
-interface ParticipantsProps {
-  handleRemoveGuestInvite: (email: string) => void;
-  handleAddGuestInvite: (id: string, email: string) => void;
-}
-
-export function Guest({
-  handleRemoveGuestInvite,
-  handleAddGuestInvite,
-}: ParticipantsProps) {
-  const { participants } = useTripContext();
+export function Guest() {
+  const { participants, handleAddGuestInvite, handleRemoveGuestInvite } =
+    useTripContext();
 
   const [isManageGuestsModalOpen, setIsManageGuestsModalOpen] = useState(false);
 

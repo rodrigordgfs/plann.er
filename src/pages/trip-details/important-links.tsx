@@ -2,14 +2,8 @@ import { Link2, Plus } from "lucide-react";
 import { Button } from "../../components/button";
 import useTripContext from "../../hooks/use-trip-context";
 
-interface ImportantLinksProps {
-  handleCreateLinkModalOpen: (value: boolean) => void;
-}
-
-export function ImportantLinks({
-  handleCreateLinkModalOpen,
-}: ImportantLinksProps) {
-  const { links } = useTripContext();
+export function ImportantLinks() {
+  const { links, handleLinkModalOpen } = useTripContext();
 
   return (
     <div className="space-y-6">
@@ -49,7 +43,7 @@ export function ImportantLinks({
         )}
       </div>
       <Button
-        onClick={() => handleCreateLinkModalOpen(true)}
+        onClick={() => handleLinkModalOpen(true)}
         variant="secondary"
         size="full"
       >
