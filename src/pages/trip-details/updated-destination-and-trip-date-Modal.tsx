@@ -102,7 +102,7 @@ export function UpdateDestinationAndTripDateModal() {
               variant="primary"
               size="full"
             >
-              Salvar link
+              Salvar dados da viagem
             </Button>
           </form>
         </div>
