@@ -3,6 +3,7 @@ import { Button } from "../../components/button";
 import useAuthContext from "../../hooks/use-auth-context";
 import { z } from "zod";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 type ErrorType = {
   [key: string]: string;
@@ -14,12 +15,15 @@ const loginSchema = z.object({
 });
 
 export function LoginPage() {
+  const navigate = useNavigate();
   const { handleLogin, isAuthLoading, token } = useAuthContext();
   const [errors, setErrors] = useState<ErrorType>({});
 
   useEffect(() => {
-    console.log(token);
-  }, [token])
+    if (token) {
+      navigate("/");
+    }
+  }, [token, navigate]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -62,8 +66,7 @@ export function LoginPage() {
             />
             <h2 className="text-4xl font-bold pl-2">Acesse a plataforma</h2>
             <p className="text-base text-zinc-600 pl-2">
-              Faça login para começar a construir seus projetos
-              ainda hoje.
+              Faça login para começar a construir seus projetos ainda hoje.
             </p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4 pl-2">
@@ -125,6 +128,7 @@ export function LoginPage() {
                 Entrar
               </Button>
               <Button
+                onClick={() => navigate("/register")}
                 disabled={isAuthLoading}
                 type="button"
                 variant="secondary"

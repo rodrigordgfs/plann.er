@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useState } from "react";
+import { createContext, FC, ReactNode, useEffect, useState } from "react";
 import { api } from "../lib/axios";
 import { toast } from "react-toastify";
 
@@ -7,7 +7,11 @@ export interface AuthContextType {
   userId: string | undefined;
   isAuthLoading: boolean;
   handleSetToken: (token: string) => void;
-  handleLogin: (email: string | undefined, password: string | undefined) => void;
+  handleLogin: (
+    email: string | undefined,
+    password: string | undefined
+  ) => void;
+  handleRegister: (name: string, email: string, password: string) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -17,25 +21,38 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 export const AuthContextProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [token, setToken] = useState<string | undefined>();
-  const [userId, setUserId] = useState<string | undefined>();
+  const [token, setToken] = useState<string | undefined>(
+    localStorage.getItem("token") || undefined
+  );
+  const [userId, setUserId] = useState<string | undefined>(
+    localStorage.getItem("userId") || undefined
+  );
   const [isAuthLoading, setIsAuthLoading] = useState<boolean>(false);
 
   const handleSetToken = (value: string) => {
     setToken(value);
+    localStorage.setItem("token", value);
   };
 
-  const handleLogin = (email: string | undefined, password: string | undefined) => {
+  const handleSetUserId = (value: string) => {
+    setUserId(value);
+    localStorage.setItem("userId", value);
+  };
+
+  const handleLogin = (
+    email: string | undefined,
+    password: string | undefined
+  ) => {
     setIsAuthLoading(true);
-    
+
     api
-      .post('/sign-in', {
+      .post("/sign-in", {
         email,
         password,
       })
       .then(({ data }) => {
-        setToken(data.token);
-        setUserId(data.userId);
+        handleSetToken(data.token);
+        handleSetUserId(data.id);
         toast.success("Login realizado com sucesso!");
       })
       .catch((e) => {
@@ -46,6 +63,39 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
       });
   };
 
+  const handleRegister = (name: string, email: string, password: string) => {
+    setIsAuthLoading(true);
+
+    api
+      .post("/sign-up", {
+        name,
+        email,
+        password,
+      })
+      .then(({ data }) => {
+        handleSetToken(data.token);
+        handleSetUserId(data.id);
+        toast.success("Cadastro realizado com sucesso!");
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setIsAuthLoading(false);
+      });
+  };
+
+  useEffect(() => {
+    const savedToken = localStorage.getItem("token");
+    const savedUserId = localStorage.getItem("userId");
+    if (savedToken) {
+      setToken(savedToken);
+    }
+    if (savedUserId) {
+      setUserId(savedUserId);
+    }
+  }, []);
+
   return (
     <AuthContext.Provider
       value={{
@@ -54,6 +104,7 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
         handleSetToken,
         handleLogin,
         isAuthLoading,
+        handleRegister,
       }}
     >
       {children}
