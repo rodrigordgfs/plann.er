@@ -64,7 +64,7 @@ export function LoginPage() {
               alt="Plann.er logo"
               className="h-12 self-start"
             />
-            <h2 className="text-4xl font-bold pl-2">Acesse a plataforma</h2>
+            <h2 className="text-2xl md:text-4xl font-bold pl-2">Acesse a plataforma</h2>
             <p className="text-base text-zinc-600 pl-2">
               Faça login para começar a construir seus projetos ainda hoje.
             </p>

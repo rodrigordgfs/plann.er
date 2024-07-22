@@ -88,7 +88,7 @@ export function RegisterPage() {
                 className="h-12 self-start"
               />
             </div>
-            <h2 className="text-4xl font-bold pl-2">
+            <h2 className="text-2xl md:text-4xl  font-bold pl-2">
               Registre-se na plataforma
             </h2>
             <p className="text-base text-zinc-600 pl-2">
