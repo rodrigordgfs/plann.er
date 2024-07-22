@@ -6,12 +6,14 @@ export interface AuthContextType {
   token: string | undefined;
   userId: string | undefined;
   isAuthLoading: boolean;
+  isAccountCreatedModalOpen: boolean;
   handleSetToken: (token: string) => void;
   handleLogin: (
     email: string | undefined,
     password: string | undefined
   ) => void;
   handleRegister: (name: string, email: string, password: string) => void;
+  handleCreatedAccountModalOpen: (value: boolean) => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -28,6 +30,7 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
     localStorage.getItem("userId") || undefined
   );
   const [isAuthLoading, setIsAuthLoading] = useState<boolean>(false);
+  const [isAccountCreatedModalOpen, setIsAccountCreatedModalOpen] = useState<boolean>(false);
 
   const handleSetToken = (value: string) => {
     setToken(value);
@@ -75,7 +78,7 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
       .then(({ data }) => {
         handleSetToken(data.token);
         handleSetUserId(data.id);
-        toast.success("Cadastro realizado com sucesso!");
+        handleCreatedAccountModalOpen(true);
       })
       .catch((e) => {
         toast.error(e.response.data.message);
@@ -84,6 +87,10 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
         setIsAuthLoading(false);
       });
   };
+
+  const handleCreatedAccountModalOpen = (value: boolean) => {
+    setIsAccountCreatedModalOpen(value);
+  }
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
@@ -105,6 +112,8 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
         handleLogin,
         isAuthLoading,
         handleRegister,
+        isAccountCreatedModalOpen,
+        handleCreatedAccountModalOpen,
       }}
     >
       {children}

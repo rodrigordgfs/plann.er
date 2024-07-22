@@ -4,6 +4,7 @@ import { TripDetailsPage } from "../pages/trip-details";
 import { LoginPage } from "../pages/login";
 import { RegisterPage } from "../pages/register";
 import { ProtectedRoute } from "../layout/protected";
+import { DashboardPage } from "../pages/dashboard";
 
 export const router = createBrowserRouter([
   {
@@ -13,6 +14,10 @@ export const router = createBrowserRouter([
   {
     path: "/register",
     element: <RegisterPage />,
+  },
+  {
+    path: "/dashboard",
+    element: <ProtectedRoute element={<DashboardPage />} />,
   },
   {
     path: "/",

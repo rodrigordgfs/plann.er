@@ -14,6 +14,7 @@ const buttonVariants = tv({
     size: {
       default: "py-2",
       full: "w-full h-11",
+      icon: "w-11 h-11 p-0",
     },
   },
   defaultVariants: {

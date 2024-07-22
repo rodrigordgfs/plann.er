@@ -21,7 +21,7 @@ export function LoginPage() {
 
   useEffect(() => {
     if (token) {
-      navigate("/");
+      navigate("/dashboard");
     }
   }, [token, navigate]);
 
