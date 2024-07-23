@@ -429,6 +429,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
             setTrip(tripData);
             setActivities(activitiesData);
             setIsUpdateDestinationTripDateModalOpen(false);
+            toast.success("Viagem atualizada com sucesso");
           })
           .catch((e) => {
             if (axios.isAxiosError(e)) {
