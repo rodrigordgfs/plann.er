@@ -1,26 +1,55 @@
 import { AtSign, Plus, X } from "lucide-react";
 import { FormEvent } from "react";
+import useTripContext from "../../hooks/use-trip-context";
+import { toast } from "react-toastify";
 
 interface InviteGuestsModalProps {
-  handleChangeGuestsModal: (value: boolean) => void;
-  handleRemoveEmailsFromIvites: (email: string) => void;
-  handleAddEmailToInvite: (event: FormEvent<HTMLFormElement>) => void;
+  handleRemoveEmailsFromIvites: (newEmailList: string[]) => void;
+  handleAddEmailToInvite: (email: string) => void;
   emailsToInvite: string[];
 }
 
 export function InviteGuestsModal({
   emailsToInvite,
   handleAddEmailToInvite,
-  handleChangeGuestsModal,
   handleRemoveEmailsFromIvites,
 }: InviteGuestsModalProps) {
+  const { handleGuestsModalOpen } = useTripContext();
+
+  const handleSubmitEmail = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const data = new FormData(event.currentTarget);
+    const email = data.get("email")?.toString();
+
+    if (!email) {
+      toast.warning("Por favor, preencha um email para adicionar");
+      return;
+    }
+
+    if (emailsToInvite.includes(email)) {
+      toast.warning("Email já inserido");
+      return;
+    }
+
+    handleAddEmailToInvite(email);
+
+    event.currentTarget.reset();
+  };
+
+  const handleRemoveEmail = (emailToRemove: string) => {
+    const newEmailList = emailsToInvite.filter(
+      (invited) => invited !== emailToRemove
+    );
+    handleRemoveEmailsFromIvites(newEmailList);
+  };
+
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center px-4">
       <div className="w-[640px] rounded-xl py-5 px-6 shadow-shape bg-zinc-900 space-y-5">
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">Selecionar convidados</h2>
-            <button onClick={() => handleChangeGuestsModal(false)}>
+            <button onClick={() => handleGuestsModalOpen(false)}>
               <X className="size-5 text-zinc-400" />
             </button>
           </div>
@@ -41,7 +70,7 @@ export function InviteGuestsModal({
                   <span className="text-zinc-300">{email}</span>
                   <button
                     type="button"
-                    onClick={() => handleRemoveEmailsFromIvites(email)}
+                    onClick={() => handleRemoveEmail(email)}
                   >
                     <X className="size-4 text-zinc-400" />
                   </button>
@@ -58,7 +87,7 @@ export function InviteGuestsModal({
         <div className="w-full h-px bg-zinc-800" />
 
         <form
-          onSubmit={(event) => handleAddEmailToInvite(event)}
+          onSubmit={(event) => handleSubmitEmail(event)}
           className="p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2"
         >
           <div className="px-2 flex items-center flex-1 gap-2">

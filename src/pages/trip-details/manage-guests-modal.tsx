@@ -69,15 +69,17 @@ export function ManageGuestsModal() {
             participants.map((participant) => {
               return (
                 <div
-                  key={participant.email}
+                  key={participant.user.email}
                   className="py-1.5 px-2.5 rounded-md bg-zinc-800 flex items-center gap-2"
                 >
-                  <span className="text-zinc-300">{participant.email}</span>
+                  <span className="text-zinc-300">
+                    {participant.user.email}
+                  </span>
                   <button
                     disabled={removingGuestId === participant.id}
                     type="button"
                     onClick={() =>
-                      handleRemoveGuest(participant.id, participant.email)
+                      handleRemoveGuest(participant.id, participant.user.email)
                     }
                   >
                     {removingGuestId === participant.id ? (

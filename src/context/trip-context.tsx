@@ -3,6 +3,7 @@ import { api } from "../lib/axios";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { format } from "date-fns";
+import useAuthContext from "../hooks/use-auth-context";
 
 interface Trip {
   id: string;
@@ -30,9 +31,19 @@ interface Link {
 
 interface Participant {
   id: string;
-  name: string | null;
-  email: string;
+  user: {
+    name: string | null;
+    email: string;
+  };
   is_confirmed: boolean;
+}
+
+interface ApiError {
+  response: {
+    data: {
+      message: string;
+    };
+  };
 }
 
 export interface TripContextType {
@@ -53,6 +64,9 @@ export interface TripContextType {
   savingActivity: boolean;
   isUpdateDestinationTripDateModalOpen: boolean;
   updatingTrip: boolean;
+  isCreateTripModalOpen: boolean;
+  isGuestsModalOpen: boolean;
+  loadingConfirmTrip: boolean;
   handleAddGuestInvite: (tripId: string | undefined, email: string) => void;
   handleRemoveGuestInvite: (email: string) => void;
   handleActivityModalOpen: (value: boolean) => void;
@@ -90,6 +104,14 @@ export interface TripContextType {
     starts_at: Date | undefined,
     ends_at: Date | undefined
   ) => void;
+  handleCreateTripModalOpen: (value: boolean) => void;
+  handleGuestsModalOpen: (value: boolean) => void;
+  handleCreateTrip: (
+    destination: string,
+    starts_at: string | undefined,
+    ends_at: string | undefined,
+    emails_to_invite: string[]
+  ) => Promise<string | undefined>;
 }
 
 export const TripContext = createContext<TripContextType | undefined>(
@@ -99,11 +121,14 @@ export const TripContext = createContext<TripContextType | undefined>(
 export const TripContextProvider: FC<{ children: ReactNode }> = ({
   children,
 }) => {
+  const { userId } = useAuthContext();
+
   const [trip, setTrip] = useState<Trip | null>(null);
   const [activities, setActivities] = useState<Activities>({});
   const [links, setLinks] = useState<Link[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [isActivityModalOpen, setIsActivityModalOpen] = useState(false);
+  const [isCreateTripModalOpen, setIsCreateTripModalOpen] = useState(false);
   const [isUpdateActivityModalOpen, setIsUpdateActivityModalOpen] =
     useState(false);
   const [activitySelected, setActivitySelected] = useState<Activity | null>(
@@ -122,6 +147,16 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     isUpdateDestinationTripDateModalOpen,
     setIsUpdateDestinationTripDateModalOpen,
   ] = useState(false);
+  const [isGuestsModalOpen, setIsGuestsModalOpen] = useState(false);
+  const [loadingConfirmTrip, setLoadingConfirmTrip] = useState(false);
+
+  const handleGuestsModalOpen = (value: boolean) => {
+    setIsGuestsModalOpen(value);
+  };
+
+  const handleCreateTripModalOpen = (value: boolean) => {
+    setIsCreateTripModalOpen(value);
+  };
 
   const handleActivityModalOpen = (value: boolean) => {
     setIsActivityModalOpen(value);
@@ -129,6 +164,37 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
 
   const handleLinkModalOpen = (value: boolean) => {
     setIsLinkModalOpen(value);
+  };
+
+  const handleCreateTrip = async (
+    destination: string,
+    starts_at: string | undefined,
+    ends_at: string | undefined,
+    emails_to_invite: string[]
+  ): Promise<string | undefined> => {
+    setLoadingConfirmTrip(true);
+
+    try {
+      const { data } = await api.post("/trips", {
+        destination,
+        starts_at,
+        ends_at,
+        emails_to_invite,
+        user_id: userId,
+      });
+
+      const { tripId } = data;
+
+      if (tripId) {
+        toast.success("Viagem criada com sucesso");
+        setLoadingConfirmTrip(false);
+        return tripId;
+      }
+    } catch (error) {
+      setLoadingConfirmTrip(false);
+      const apiError = error as ApiError;
+      toast.error(apiError.response.data.message);
+    }
   };
 
   const handleAddNewLink = (
@@ -220,7 +286,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
 
   const handleRemoveGuestInvite = (email: string) => {
     setParticipants(
-      participants?.filter((participant) => participant.email !== email)
+      participants?.filter((participant) => participant.user.email !== email)
     );
   };
 
@@ -418,6 +484,12 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         handleUpdateDestinationAndTripDateModalOpen,
         updatingTrip,
         handleUpdateTrip,
+        isCreateTripModalOpen,
+        handleCreateTripModalOpen,
+        isGuestsModalOpen,
+        handleGuestsModalOpen,
+        handleCreateTrip,
+        loadingConfirmTrip,
       }}
     >
       {children}

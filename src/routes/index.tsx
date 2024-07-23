@@ -1,5 +1,4 @@
 import { createBrowserRouter } from "react-router-dom";
-import { CreateTripPage } from "../pages/create-trip";
 import { TripDetailsPage } from "../pages/trip-details";
 import { LoginPage } from "../pages/login";
 import { RegisterPage } from "../pages/register";
@@ -20,11 +19,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute element={<DashboardPage />} />,
   },
   {
-    path: "/",
-    element: <ProtectedRoute element={<CreateTripPage />} />,
-  },
-  {
     path: "/trips/:tripId",
-    element: <ProtectedRoute element={<TripDetailsPage />} />,
+    element: <ProtectedRoute element={<TripDetailsPage />} />
   },
 ]);

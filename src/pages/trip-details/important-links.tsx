@@ -23,7 +23,7 @@ export function ImportantLinks() {
                   <a
                     href={link.url}
                     target="_blank"
-                    className="block text-xs text-zinc-400 truncate hover:text-zinc-200 transition-all"
+                    className="block text-sm text-zinc-400 truncate hover:text-zinc-200 transition-all"
                   >
                     {link.url}
                   </a>
