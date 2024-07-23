@@ -30,7 +30,8 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
     localStorage.getItem("userId") || undefined
   );
   const [isAuthLoading, setIsAuthLoading] = useState<boolean>(false);
-  const [isAccountCreatedModalOpen, setIsAccountCreatedModalOpen] = useState<boolean>(false);
+  const [isAccountCreatedModalOpen, setIsAccountCreatedModalOpen] =
+    useState<boolean>(false);
 
   const handleSetToken = (value: string) => {
     setToken(value);
@@ -40,6 +41,10 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
   const handleSetUserId = (value: string) => {
     setUserId(value);
     localStorage.setItem("userId", value);
+  };
+
+  const handleSetExpiresAt = (value: string) => {
+    localStorage.setItem("expires_at", value);
   };
 
   const handleLogin = (
@@ -56,6 +61,7 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
       .then(({ data }) => {
         handleSetToken(data.token);
         handleSetUserId(data.id);
+        handleSetExpiresAt(data.expires_at);
         toast.success("Login realizado com sucesso!");
       })
       .catch((e) => {
@@ -90,7 +96,7 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
 
   const handleCreatedAccountModalOpen = (value: boolean) => {
     setIsAccountCreatedModalOpen(value);
-  }
+  };
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
