@@ -12,16 +12,14 @@ export function Activities() {
       {activities &&
         Object.keys(activities).map((date) => {
           const parsedDate = parseISO(date);
-          console.log(date);
-
           return (
             <div key={date} className="space-y-2.5">
               <div className="flex gap-2 items-baseline">
                 <span className="text-xl text-zinc-300 font-semibold">
-                  {format(parsedDate || new Date(), "'Dia' d'/'MMM")}
+                  {format(parsedDate, "'Dia' d'/'MMM")}
                 </span>
                 <span className="text-xs text-zinc-500">
-                  {format(parsedDate || new Date(), "EEEE", { locale: ptBR })}
+                  {format(parsedDate, "EEEE", { locale: ptBR })}
                 </span>
               </div>
               {Array.isArray(activities[date]) &&

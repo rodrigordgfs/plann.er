@@ -1,4 +1,4 @@
-import { LoaderCircleIcon, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { useEffect } from "react";
 import { CreateActivityModal } from "./create-activity-modal";
 import { ImportantLinks } from "./important-links";
@@ -10,6 +10,7 @@ import { useParams } from "react-router-dom";
 import useTripContext from "../../hooks/use-trip-context";
 import { UpdateActivityModal } from "./update-activity-modal";
 import { TripDetails } from "./trip-details";
+import { Skeleton } from "../../components/skeleton";
 
 export function TripDetailsPage() {
   const { tripId } = useParams();
@@ -31,12 +32,14 @@ export function TripDetailsPage() {
   return (
     <>
       {isLoadingTripData ? (
-        <div className="w-full h-screen bg-zinc-900 flex flex-col items-center justify-center gap-2 px-4">
-          <LoaderCircleIcon className="size-10 animate-spin" />
-          <p className="text-lg font-semibold text-center">
-            Carregando dados da viagem! Por favor, aguarde!
-          </p>
-        </div>
+        <main className="flex flex-col md:flex-row gap-16 px-4">
+          <div className="flex-1 space-y-6">
+            <Skeleton type="button" width="100%" height="400px" />
+          </div>
+          <div className="w-full md:w-80 space-y-6">
+            <Skeleton type="button" width="100%" height="600px" />
+          </div>
+        </main>
       ) : (
         <main className="flex flex-col md:flex-row gap-16 px-4">
           <div className="flex-1 space-y-6">

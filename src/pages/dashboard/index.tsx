@@ -7,6 +7,7 @@ import { TripCard } from "./trip-card";
 import { api } from "../../lib/axios";
 import useAuthContext from "../../hooks/use-auth-context";
 import { LegendModal } from "./legend-modal";
+import { Skeleton } from "../../components/skeleton";
 
 type Trip = {
   id: string;
@@ -73,7 +74,11 @@ export function DashboardPage() {
           </div>
 
           {isLoading ? (
-            <p>Loading...</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {[...Array(6)].map((_, index) => (
+                <Skeleton key={index} type="button" height="190px" width="100%" />
+              ))}
+            </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {trips.map((trip) => (
