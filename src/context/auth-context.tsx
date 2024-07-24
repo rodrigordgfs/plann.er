@@ -81,9 +81,7 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
         email,
         password,
       })
-      .then(({ data }) => {
-        handleSetToken(data.token);
-        handleSetUserId(data.id);
+      .then(() => {
         handleCreatedAccountModalOpen(true);
       })
       .catch((e) => {

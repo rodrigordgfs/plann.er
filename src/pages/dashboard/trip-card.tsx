@@ -5,19 +5,10 @@ import { format } from "date-fns/format";
 import { ptBR } from "date-fns/locale";
 import { Calendar, Link2, MapPin, NotebookTabsIcon, User2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { Trip } from "../../context/trip-context";
 
 type TripCardProps = {
-  trip: {
-    id: string;
-    destination: string;
-    starts_at: string;
-    ends_at: string;
-    _count: {
-      participants: number;
-      activities: number;
-      links: number;
-    };
-  };
+  trip: Trip;
 };
 
 export function TripCard({ trip }: TripCardProps) {
@@ -33,8 +24,8 @@ export function TripCard({ trip }: TripCardProps) {
       : null;
 
   const tripStatus = () => {
-    const startsAt = parseISO(format(parseISO(trip.starts_at), "yyyy-MM-dd"));
-    const endsAt = parseISO(format(parseISO(trip.ends_at), "yyyy-MM-dd"));
+    const startsAt = parseISO(format(parseISO(trip?.starts_at), "yyyy-MM-dd"));
+    const endsAt = parseISO(format(parseISO(trip?.ends_at), "yyyy-MM-dd"));
     const currentDate = parseISO(format(new Date(), "yyyy-MM-dd"));
 
     if (isBefore(currentDate, startsAt)) {
@@ -52,7 +43,7 @@ export function TripCard({ trip }: TripCardProps) {
   };
 
   const handleCardClick = () => {
-    navigate(`/trips/${trip.id}`);
+    navigate(`/trips/${trip?.id}`);
   };
 
   return (
@@ -62,7 +53,7 @@ export function TripCard({ trip }: TripCardProps) {
     >
       <div className="flex flex-row items-center gap-2">
         <MapPin className="size-5" />
-        <h3 className="text-lg font-semibold">{trip.destination}</h3>
+        <h3 className="text-lg font-semibold">{trip?.destination}</h3>
       </div>
       <div className="flex flex-row items-center gap-2">
         <Calendar className="size-5" />
@@ -70,15 +61,15 @@ export function TripCard({ trip }: TripCardProps) {
       </div>
       <div className="flex flex-row items-center gap-2">
         <NotebookTabsIcon className="size-5" />
-        <span>{trip._count.activities} atividades</span>
+        <span>{trip?._count.activities} atividades</span>
       </div>
       <div className="flex flex-row items-center gap-2">
         <User2 className="size-5" />
-        <span>{trip._count.participants} participantes</span>
+        <span>{trip?._count.participants} participantes</span>
       </div>
       <div className="flex flex-row items-center gap-2">
         <Link2 className="size-5" />
-        <span>{trip._count.links} links</span>
+        <span>{trip?._count.links} links</span>
       </div>
     </div>
   );

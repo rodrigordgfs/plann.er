@@ -4,28 +4,19 @@ import useTripContext from "../../hooks/use-trip-context";
 import { CreateTripModal } from "./create-travel-modal";
 import { useEffect, useState } from "react";
 import { TripCard } from "./trip-card";
-import { api } from "../../lib/axios";
 import useAuthContext from "../../hooks/use-auth-context";
 import { LegendModal } from "./legend-modal";
 import { Skeleton } from "../../components/skeleton";
 
-type Trip = {
-  id: string;
-  destination: string;
-  starts_at: string;
-  ends_at: string;
-  _count: {
-    participants: number;
-    activities: number;
-    links: number;
-  };
-};
-
 export function DashboardPage() {
-  const { isCreateTripModalOpen, handleCreateTripModalOpen } = useTripContext();
+  const {
+    isCreateTripModalOpen,
+    handleCreateTripModalOpen,
+    handleGeUserTrips,
+    trips,
+    loadingTrips,
+  } = useTripContext();
   const { userId } = useAuthContext();
-  const [trips, setTrips] = useState<Trip[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [isLegendOpen, setIsLegendOpen] = useState(false);
 
   const handleLegendOpen = (value: boolean) => {
@@ -33,21 +24,8 @@ export function DashboardPage() {
   };
 
   useEffect(() => {
-    const fetchTrips = async () => {
-      try {
-        const response = await api.get("/trips", {
-          params: { user_id: userId },
-        });
-        setTrips(response.data);
-      } catch (error) {
-        console.error("Error fetching trips:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchTrips();
-  }, [userId]);
+    handleGeUserTrips(userId);
+  }, [userId, handleGeUserTrips]);
 
   return (
     <>
@@ -73,15 +51,26 @@ export function DashboardPage() {
             </div>
           </div>
 
-          {isLoading ? (
+          {loadingTrips ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
               {[...Array(6)].map((_, index) => (
-                <Skeleton key={index} type="button" height="190px" width="100%" />
+                <Skeleton
+                  key={index}
+                  type="button"
+                  height="190px"
+                  width="100%"
+                />
               ))}
+            </div>
+          ) : trips?.length === 0 ? (
+            <div className="flex justify-center items-center h-64">
+              <p className="text-lg text-gray-300">
+                Você ainda não tem viagens cadastradas.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {trips.map((trip) => (
+              {trips?.map((trip) => (
                 <TripCard key={trip.id} trip={trip} />
               ))}
             </div>

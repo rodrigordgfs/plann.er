@@ -26,7 +26,8 @@ const registerSchema = z
 
 export function RegisterPage() {
   const navigate = useNavigate();
-  const { handleRegister, isAuthLoading, token, isAccountCreatedModalOpen } = useAuthContext();
+  const { handleRegister, isAuthLoading, token, isAccountCreatedModalOpen } =
+    useAuthContext();
   const [errors, setErrors] = useState<ErrorType>({});
 
   useEffect(() => {
@@ -63,7 +64,6 @@ export function RegisterPage() {
         },
         {}
       );
-      console.log(newErrors);
 
       setErrors(newErrors);
       return;
@@ -98,7 +98,10 @@ export function RegisterPage() {
                 hoje.
               </p>
 
-              <form onSubmit={handleSubmit} className="flex flex-col gap-4 pl-2">
+              <form
+                onSubmit={handleSubmit}
+                className="flex flex-col gap-4 pl-2"
+              >
                 <div className="flex flex-col gap-2">
                   <p className="font-semibold text-sm text-zinc-200">
                     Nome completo

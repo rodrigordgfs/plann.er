@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "../../components/button";
-import useTripContext from "../../hooks/use-trip-context";
+import useAuthContext from "../../hooks/use-auth-context";
 
 export function AccountCreatedModal() {
   const navigate = useNavigate();
-  const { handleLinkModalOpen } = useTripContext();
+  const { handleCreatedAccountModalOpen } = useAuthContext();
 
   const handleCloseModal = () => {
-    handleLinkModalOpen(false);
+    handleCreatedAccountModalOpen(false);
     navigate("/login");
   };
 

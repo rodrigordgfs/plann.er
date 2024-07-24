@@ -5,12 +5,16 @@ import axios from "axios";
 import { format } from "date-fns";
 import useAuthContext from "../hooks/use-auth-context";
 
-interface Trip {
+export interface Trip {
   id: string;
   destination: string;
   starts_at: string;
   ends_at: string;
-  is_confirmed: boolean;
+  _count: {
+    participants: number;
+    activities: number;
+    links: number;
+  };
 }
 
 export interface Activity {
@@ -48,6 +52,7 @@ interface ApiError {
 
 export interface TripContextType {
   trip: Trip | null;
+  trips: Trip[] | null;
   activities: Activities;
   links: Link[];
   participants: Participant[];
@@ -67,6 +72,7 @@ export interface TripContextType {
   isCreateTripModalOpen: boolean;
   isGuestsModalOpen: boolean;
   loadingConfirmTrip: boolean;
+  loadingTrips: boolean;
   handleAddGuestInvite: (tripId: string | undefined, email: string) => void;
   handleRemoveGuestInvite: (email: string) => void;
   handleActivityModalOpen: (value: boolean) => void;
@@ -112,6 +118,7 @@ export interface TripContextType {
     ends_at: string | undefined,
     emails_to_invite: string[]
   ) => Promise<string | undefined>;
+  handleGeUserTrips: (user_id: string | undefined) => void;
 }
 
 export const TripContext = createContext<TripContextType | undefined>(
@@ -124,6 +131,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   const { userId } = useAuthContext();
 
   const [trip, setTrip] = useState<Trip | null>(null);
+  const [trips, setTrips] = useState<Trip[] | null>(null);
   const [activities, setActivities] = useState<Activities>({});
   const [links, setLinks] = useState<Link[]>([]);
   const [participants, setParticipants] = useState<Participant[]>([]);
@@ -149,6 +157,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   ] = useState(false);
   const [isGuestsModalOpen, setIsGuestsModalOpen] = useState(false);
   const [loadingConfirmTrip, setLoadingConfirmTrip] = useState(false);
+  const [loadingTrips, setLoadingTrips] = useState(false);
 
   const handleGuestsModalOpen = (value: boolean) => {
     setIsGuestsModalOpen(value);
@@ -165,6 +174,23 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   const handleLinkModalOpen = (value: boolean) => {
     setIsLinkModalOpen(value);
   };
+
+  const handleGeUserTrips = useCallback(async (user_id: string | undefined) => {
+    setLoadingTrips(true);
+
+    try {
+      const { data } = await api.get("/trips", {
+        params: { user_id },
+      });
+
+      setTrips(data);
+    } catch (error) {
+      const apiError = error as ApiError;
+      toast.error(apiError.response.data.message);
+    } finally {
+      setLoadingTrips(false);
+    }
+  }, []);
 
   const handleCreateTrip = async (
     destination: string,
@@ -187,6 +213,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
 
       if (tripId) {
         toast.success("Viagem criada com sucesso");
+        handleCreateTripModalOpen(false);
         setLoadingConfirmTrip(false);
         return tripId;
       }
@@ -456,6 +483,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     <TripContext.Provider
       value={{
         trip,
+        trips,
         activities,
         links,
         participants,
@@ -491,6 +519,8 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         handleGuestsModalOpen,
         handleCreateTrip,
         loadingConfirmTrip,
+        handleGeUserTrips,
+        loadingTrips,
       }}
     >
       {children}
