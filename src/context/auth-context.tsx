@@ -14,6 +14,7 @@ export interface AuthContextType {
   ) => void;
   handleRegister: (name: string, email: string, password: string) => void;
   handleCreatedAccountModalOpen: (value: boolean) => void;
+  handleLogOut: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -43,8 +44,10 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
     localStorage.setItem("userId", value);
   };
 
-  const handleSetExpiresAt = (value: string) => {
-    localStorage.setItem("expires_at", value);
+  const handleLogOut = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    window.location.href = "/login";
   };
 
   const handleLogin = (
@@ -61,7 +64,6 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
       .then(({ data }) => {
         handleSetToken(data.token);
         handleSetUserId(data.id);
-        handleSetExpiresAt(data.expires_at);
         toast.success("Login realizado com sucesso!");
       })
       .catch((e) => {
@@ -118,6 +120,7 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
         handleRegister,
         isAccountCreatedModalOpen,
         handleCreatedAccountModalOpen,
+        handleLogOut,
       }}
     >
       {children}
