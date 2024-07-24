@@ -12,11 +12,12 @@ export function TripDetails() {
     isUpdateDestinationTripDateModalOpen,
   } = useTripContext();
 
-  const displayedDate = trip
-    ? format(trip?.starts_at, "d' de 'LLLL", { locale: ptBR })
-        .concat(" até ")
-        .concat(format(trip?.ends_at, "d' de 'LLLL", { locale: ptBR }))
-    : null;
+  const displayedDate =
+    trip?.starts_at && trip?.ends_at
+      ? format(trip?.starts_at, "d' de 'LLLL", { locale: ptBR })
+          .concat(" até ")
+          .concat(format(trip?.ends_at, "d' de 'LLLL", { locale: ptBR }))
+      : null;
 
   return (
     <>

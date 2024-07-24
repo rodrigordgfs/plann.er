@@ -23,11 +23,14 @@ type TripCardProps = {
 export function TripCard({ trip }: TripCardProps) {
   const navigate = useNavigate();
 
-  const displayedDate = trip
-    ? format(parseISO(trip.starts_at), "d' de 'LLLL", { locale: ptBR })
-        .concat(" até ")
-        .concat(format(parseISO(trip.ends_at), "d' de 'LLLL", { locale: ptBR }))
-    : null;
+  const displayedDate =
+    trip?.starts_at && trip?.ends_at
+      ? format(parseISO(trip.starts_at), "d' de 'LLLL", { locale: ptBR })
+          .concat(" até ")
+          .concat(
+            format(parseISO(trip.ends_at), "d' de 'LLLL", { locale: ptBR })
+          )
+      : null;
 
   const tripStatus = () => {
     const startsAt = parseISO(format(parseISO(trip.starts_at), "yyyy-MM-dd"));
