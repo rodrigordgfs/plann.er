@@ -10,6 +10,14 @@ export const api = axios.create({
   },
 });
 
+const logout = () => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("expires_at");
+  window.location.href = "/login";
+  return Promise.reject(new Error("Token expired"));
+};
+
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -19,15 +27,13 @@ api.interceptors.request.use(
 
       if (expires_at) {
         if (Number(expires_at) < Number(currentTime)) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("userId");
-          localStorage.removeItem("expires_at");
-          window.location.href = "/login";
-          return Promise.reject(new Error("Token expired"));
+          logout();
         }
       }
 
       config.headers.Authorization = `Bearer ${token}`;
+    } else {
+      logout();
     }
     return config;
   },
