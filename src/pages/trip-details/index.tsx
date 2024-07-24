@@ -43,15 +43,26 @@ export function TripDetailsPage() {
       ) : (
         <main className="flex flex-col md:flex-row gap-16 px-4">
           <div className="flex-1 space-y-6">
-            <div className="flex space-y-2 flex-col sm:flex-row items-center justify-between">
+            <div className="flex space-y-2 flex-row items-center justify-between">
               <h2 className="text-3xl font-semibold">Atividades</h2>
-              <Button
-                variant="primary"
-                onClick={() => handleActivityModalOpen(true)}
-              >
-                <Plus className="size-5" />
-                Cadastrar Atividade
-              </Button>
+              <div className="hidden lg:block">
+                <Button
+                  variant="primary"
+                  onClick={() => handleActivityModalOpen(true)}
+                >
+                  <Plus className="size-5" />
+                  Cadastrar Atividade
+                </Button>
+              </div>
+              <div className="block lg:hidden">
+                <Button
+                  variant="primary"
+                  size="icon"
+                  onClick={() => handleActivityModalOpen(true)}
+                >
+                  <Plus className="size-5" />
+                </Button>
+              </div>
             </div>
 
             <Activities />

@@ -1,4 +1,4 @@
-import { Backpack, CircleHelp } from "lucide-react";
+import { CircleHelp, PlusIcon } from "lucide-react";
 import { Button } from "../../components/button";
 import useTripContext from "../../hooks/use-trip-context";
 import { CreateTripModal } from "./create-travel-modal";
@@ -31,16 +31,27 @@ export function DashboardPage() {
     <>
       <main className="flex flex-col md:flex-row gap-16 px-4">
         <div className="flex-1 space-y-6">
-          <div className="flex space-y-2 flex-col sm:flex-row items-center justify-between">
+          <div className="flex space-y-2 flex-row items-center justify-between">
             <h2 className="text-3xl font-semibold">Suas viagens</h2>
             <div className="flex flex-row items-center gap-2">
-              <Button
-                onClick={() => handleCreateTripModalOpen(true)}
-                variant="primary"
-              >
-                <Backpack className="size-5" />
-                Cadastrar viagem
-              </Button>
+              <div className="hidden sm:block">
+                <Button
+                  onClick={() => handleCreateTripModalOpen(true)}
+                  variant="primary"
+                >
+                  <PlusIcon className="size-5" />
+                  Cadastrar viagem
+                </Button>
+              </div>
+              <div className="block sm:hidden">
+                <Button
+                  onClick={() => handleCreateTripModalOpen(true)}
+                  variant="primary"
+                  size="icon"
+                >
+                  <PlusIcon className="size-5" />
+                </Button>
+              </div>
               <Button
                 onClick={() => handleLegendOpen(true)}
                 variant="primary"
