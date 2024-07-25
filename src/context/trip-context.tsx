@@ -80,6 +80,7 @@ export interface TripContextType {
   loadingTrips: boolean;
   isConfirmParticipationModalOpen: boolean;
   loadingLinkId: string | null;
+  deletingTrip: boolean;
   handleAddGuestInvite: (tripId: string | undefined, email: string) => void;
   handleRemoveGuestInvite: (email: string) => void;
   handleActivityModalOpen: (value: boolean) => void;
@@ -130,6 +131,10 @@ export interface TripContextType {
   handleShowConfirmParticipationModal: (value: boolean) => void;
   isParticipantUnconfirmed: () => boolean;
   handleDeleteLink: (tripId: string | undefined, id: string) => void;
+  handleDeleteTrip: (
+    tripId: string | undefined,
+    userId: string | undefined
+  ) => Promise<boolean | undefined>;
 }
 
 export const TripContext = createContext<TripContextType | undefined>(
@@ -174,7 +179,25 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   const [isConfirmParticipationModalOpen, setIsConfirmParticipationModalOpen] =
     useState(false);
   const [loadingLinkId, setLoadingLinkId] = useState<string | null>(null);
+  const [deletingTrip, setDeletingTrip] = useState(false);
 
+  const handleDeleteTrip = async (
+    tripId: string | undefined,
+    userId: string | undefined
+  ) => {
+    try {
+      setDeletingTrip(true);
+
+      await api.delete(`/trips/${tripId}/participant/${userId}`);
+      toast.success("Viagem deletada com sucesso");
+      setDeletingTrip(false);
+      return true;
+    } catch (error) {
+      const apiError = error as ApiError;
+      toast.error(apiError.response.data.message);
+      setDeletingTrip(false);
+    }
+  };
 
   const isParticipantUnconfirmed = () => {
     const guest = participants.find(
@@ -220,7 +243,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         toast.error(e.response.data.message);
       })
       .finally(() => {
-        setLoadingLinkId(null)
+        setLoadingLinkId(null);
       });
   };
 
@@ -595,7 +618,9 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         isConfirmParticipationModalOpen,
         isParticipantUnconfirmed,
         handleDeleteLink,
-        loadingLinkId
+        loadingLinkId,
+        deletingTrip,
+        handleDeleteTrip,
       }}
     >
       {children}

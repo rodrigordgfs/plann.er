@@ -1,21 +1,26 @@
 import { Calendar, Tag, X } from "lucide-react";
 import { Button } from "../../components/button";
 import { FormEvent, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { DateRange, DayPicker } from "react-day-picker";
 import { ptBR } from "date-fns/locale";
 import { format } from "date-fns";
 import useTripContext from "../../hooks/use-trip-context";
+import useAuthContext from "../../hooks/use-auth-context";
 
 export function UpdateDestinationAndTripDateModal() {
   const { tripId } = useParams();
+  const navigate = useNavigate();
 
   const {
     trip,
     handleUpdateDestinationAndTripDateModalOpen,
     updatingTrip,
     handleUpdateTrip,
+    deletingTrip,
+    handleDeleteTrip,
   } = useTripContext();
+  const { userId } = useAuthContext();
 
   const today = new Date();
 
@@ -52,6 +57,13 @@ export function UpdateDestinationAndTripDateModal() {
 
   const handleDatePicker = (value: boolean) => {
     return setIsDatePickerOpen(value);
+  };
+
+  const handleDeleteUserTrip = async () => {
+    const deleted = await handleDeleteTrip(tripId, userId);
+    if (deleted) {
+      navigate("/dashboard", { replace: true });
+    }
   };
 
   return (
@@ -96,14 +108,25 @@ export function UpdateDestinationAndTripDateModal() {
                 {displayedDate || "Quando?"}
               </span>
             </span>
-            <Button
-              loading={updatingTrip}
-              type="submit"
-              variant="primary"
-              size="full"
-            >
-              Salvar dados da viagem
-            </Button>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={handleDeleteUserTrip}
+                loading={deletingTrip}
+                type="button"
+                variant="negative"
+                size="full"
+              >
+                Excluir viagem
+              </Button>
+              <Button
+                loading={updatingTrip}
+                type="submit"
+                variant="primary"
+                size="full"
+              >
+                Salvar dados da viagem
+              </Button>
+            </div>
           </form>
         </div>
       </div>
