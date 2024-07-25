@@ -1,4 +1,4 @@
-import { CircleHelp, PlusIcon } from "lucide-react";
+import { CircleHelp, Frown, PlusIcon } from "lucide-react";
 import { Button } from "../../components/button";
 import useTripContext from "../../hooks/use-trip-context";
 import { CreateTripModal } from "./create-travel-modal";
@@ -74,7 +74,8 @@ export function DashboardPage() {
               ))}
             </div>
           ) : trips?.length === 0 ? (
-            <div className="flex justify-center items-center h-64">
+            <div className="flex flex-col justify-center items-center h-64 gap-2">
+              <Frown className="size-7" />
               <p className="text-lg text-gray-300">
                 Você ainda não tem viagens cadastradas.
               </p>
