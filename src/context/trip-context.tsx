@@ -315,6 +315,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
           };
         });
 
+        toast.success("Atividade adicionada com sucesso");
         handleActivityModalOpen(false);
       })
       .catch((e) => {
@@ -333,7 +334,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         email,
       })
       .then(({ data }) => {
-        setParticipants([...participants, data]);
+        setParticipants(data);
         toast.success("Convidado adicionado com sucesso");
       })
       .catch((e) => {

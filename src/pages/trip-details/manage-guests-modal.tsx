@@ -65,32 +65,31 @@ export function ManageGuestsModal() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          {participants &&
-            participants.map((participant) => {
-              return (
-                <div
-                  key={participant.user.email}
-                  className="py-1.5 px-2.5 rounded-md bg-zinc-800 flex items-center gap-2"
+          {participants?.map((participant) => {
+            return (
+              <div
+                key={participant?.user?.email}
+                className="py-1.5 px-2.5 rounded-md bg-zinc-800 flex items-center gap-2"
+              >
+                <span className="text-zinc-300">
+                  {participant?.user?.email}
+                </span>
+                <button
+                  disabled={removingGuestId === participant?.id}
+                  type="button"
+                  onClick={() =>
+                    handleRemoveGuest(participant?.id, participant?.user?.email)
+                  }
                 >
-                  <span className="text-zinc-300">
-                    {participant.user.email}
-                  </span>
-                  <button
-                    disabled={removingGuestId === participant.id}
-                    type="button"
-                    onClick={() =>
-                      handleRemoveGuest(participant.id, participant.user.email)
-                    }
-                  >
-                    {removingGuestId === participant.id ? (
-                      <LoaderCircleIcon className="size-4 animate-spin text-zinc-400" />
-                    ) : (
-                      <X className="size-4 text-zinc-400" />
-                    )}
-                  </button>
-                </div>
-              );
-            })}
+                  {removingGuestId === participant.id ? (
+                    <LoaderCircleIcon className="size-4 animate-spin text-zinc-400" />
+                  ) : (
+                    <X className="size-4 text-zinc-400" />
+                  )}
+                </button>
+              </div>
+            );
+          })}
         </div>
 
         <div className="w-full h-px bg-zinc-800" />
