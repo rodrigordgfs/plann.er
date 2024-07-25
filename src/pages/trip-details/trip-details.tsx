@@ -4,13 +4,16 @@ import useTripContext from "../../hooks/use-trip-context";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { UpdateDestinationAndTripDateModal } from "./updated-destination-and-trip-date-Modal";
+import useAuthContext from "../../hooks/use-auth-context";
 
 export function TripDetails() {
   const {
     trip,
     handleUpdateDestinationAndTripDateModalOpen,
     isUpdateDestinationTripDateModalOpen,
+    participants,
   } = useTripContext();
+  const { userId } = useAuthContext();
 
   const displayedDate =
     trip?.starts_at && trip?.ends_at
@@ -18,6 +21,10 @@ export function TripDetails() {
           .concat(" até ")
           .concat(format(trip?.ends_at, "d' de 'LLLL", { locale: ptBR }))
       : null;
+
+  const hasOwnerPermission = participants?.some(
+    (participant) => participant.is_owner && participant.user.id === userId
+  );
 
   return (
     <>
@@ -39,14 +46,16 @@ export function TripDetails() {
             </div>
           </div>
         </div>
-        <Button
-          onClick={() => handleUpdateDestinationAndTripDateModalOpen(true)}
-          variant="secondary"
-          size="full"
-        >
-          <Settings2 className="size-5" />
-          Alterar Local/Data
-        </Button>
+        {hasOwnerPermission && (
+          <Button
+            onClick={() => handleUpdateDestinationAndTripDateModalOpen(true)}
+            variant="secondary"
+            size="full"
+          >
+            <Settings2 className="size-5" />
+            Alterar Local/Data
+          </Button>
+        )}
       </div>
 
       {isUpdateDestinationTripDateModalOpen && (
