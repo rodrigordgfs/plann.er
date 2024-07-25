@@ -68,21 +68,21 @@ export function DropdownMenu() {
               className="block px-4 py-2 text-md rounded-tl-md rounded-tr-md w-full text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
               role="menuitem"
             >
-              <User className="inline mr-2" /> Profile
+              <User className="inline mr-2" /> Perfil
             </button>
             <button
               onClick={handleSettings}
               className="block px-4 py-2 text-md w-full text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
               role="menuitem"
             >
-              <Settings className="inline mr-2" /> Settings
+              <Settings className="inline mr-2" /> Configurações
             </button>
             <button
               onClick={handleLogOutAndClose}
               className="block px-4 py-2 text-md rounded-bl-md rounded-br-md w-full text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
               role="menuitem"
             >
-              <LogOut className="inline mr-2" /> Log Out
+              <LogOut className="inline mr-2" /> Sair
             </button>
           </div>
         </div>

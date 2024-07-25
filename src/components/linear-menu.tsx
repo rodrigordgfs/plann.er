@@ -1,8 +1,10 @@
-import { LogOut, Settings, User } from "lucide-react";
+import { Home, LogOut, Settings, User } from "lucide-react";
 import { toast } from "react-toastify";
 import useAuthContext from "../hooks/use-auth-context";
+import { useNavigate } from "react-router-dom";
 
 export function LinearMenu() {
+  const navigate = useNavigate();
   const { handleLogOut } = useAuthContext();
 
   const handleProfile = () => {
@@ -11,6 +13,10 @@ export function LinearMenu() {
 
   const handleSettings = () => {
     toast.info("Em breve");
+  };
+
+  const handleHome = () => {
+    navigate("/dashboard", { replace: true });
   };
 
   const handleLogOutAndClose = () => {
@@ -25,12 +31,20 @@ export function LinearMenu() {
       aria-labelledby="menu-button"
     >
       <button
+        onClick={handleHome}
+        className="flex items-center gap-2 px-4 py-2 text-md rounded-lg text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
+        role="menuitem"
+      >
+        <Home />
+        <p>Inicio</p>
+      </button>
+      <button
         onClick={handleProfile}
         className="flex items-center gap-2 px-4 py-2 text-md rounded-lg text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
         role="menuitem"
       >
         <User />
-        <p>Profile</p>
+        <p>Perfil</p>
       </button>
       <button
         onClick={handleSettings}
@@ -38,7 +52,7 @@ export function LinearMenu() {
         role="menuitem"
       >
         <Settings />
-        <p>Settings</p>
+        <p>Configurações</p>
       </button>
       <button
         onClick={handleLogOutAndClose}
@@ -46,7 +60,7 @@ export function LinearMenu() {
         role="menuitem"
       >
         <LogOut />
-        <p>Log Out</p>
+        <p>Sair</p>
       </button>
     </div>
   );

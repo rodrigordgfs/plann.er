@@ -1,10 +1,18 @@
-import { Link2, Plus } from "lucide-react";
+import { Link2, LoaderCircle, Plus, X } from "lucide-react";
 import { Button } from "../../components/button";
 import useTripContext from "../../hooks/use-trip-context";
+import { useParams } from "react-router-dom";
 
 export function ImportantLinks() {
-  const { links, handleLinkModalOpen, isParticipantUnconfirmed } =
-    useTripContext();
+  const { tripId } = useParams();
+
+  const {
+    links,
+    handleLinkModalOpen,
+    isParticipantUnconfirmed,
+    handleDeleteLink,
+    loadingLinkId,
+  } = useTripContext();
 
   return (
     <div className="space-y-6">
@@ -14,7 +22,7 @@ export function ImportantLinks() {
           links?.map((link) => {
             return (
               <div
-                key={link.title}
+                key={link.id}
                 className="flex items-center justify-between gap-4"
               >
                 <div className="space-y-1.5">
@@ -29,7 +37,19 @@ export function ImportantLinks() {
                     {link.url}
                   </a>
                 </div>
-                <Link2 className="size-5 text-zinc-400 shrink-0" />
+                <div className="group">
+                  {loadingLinkId === link.id ? (
+                    <LoaderCircle className="size-5 text-zinc-400 animate-spin" />
+                  ) : (
+                    <>
+                      <Link2 className="size-5 text-zinc-400 shrink-0 group-hover:hidden" />
+                      <X
+                        onClick={() => handleDeleteLink(tripId, link.id)}
+                        className="size-5 text-zinc-400 shrink-0 hidden group-hover:block cursor-pointer"
+                      />
+                    </>
+                  )}
+                </div>
               </div>
             );
           })

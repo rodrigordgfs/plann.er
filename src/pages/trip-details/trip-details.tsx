@@ -1,4 +1,4 @@
-import { Calendar, MapPin, Settings2 } from "lucide-react";
+import { Calendar, MapPin, Settings2, User } from "lucide-react";
 import { Button } from "../../components/button";
 import useTripContext from "../../hooks/use-trip-context";
 import { format } from "date-fns";
@@ -40,8 +40,16 @@ export function TripDetails() {
             </div>
             <div className="flex flex-row gap-4 items-center">
               <Calendar className="size-5 text-zinc-400 shrink-0" />
-              <span className="block text-zinc-400 truncate hover:text-zinc-200 transition-all">
+              <span className="block text-zinc-400 truncate  transition-all">
                 {displayedDate}
+              </span>
+            </div>
+            <div className="flex flex-row gap-4 items-center">
+              <User className="size-5 text-zinc-400 shrink-0" />
+              <span className="block text-zinc-400 truncatetransition-all">
+                {hasOwnerPermission
+                  ? "Você é o administrador"
+                  : "Você um participante"}
               </span>
             </div>
           </div>

@@ -30,6 +30,7 @@ interface Activities {
 }
 
 interface Link {
+  id: string;
   title: string;
   url: string;
 }
@@ -78,6 +79,7 @@ export interface TripContextType {
   loadingConfirmParticipation: boolean;
   loadingTrips: boolean;
   isConfirmParticipationModalOpen: boolean;
+  loadingLinkId: string | null;
   handleAddGuestInvite: (tripId: string | undefined, email: string) => void;
   handleRemoveGuestInvite: (email: string) => void;
   handleActivityModalOpen: (value: boolean) => void;
@@ -127,6 +129,7 @@ export interface TripContextType {
   handleConfirmParticipation: (tripId: string | undefined) => void;
   handleShowConfirmParticipationModal: (value: boolean) => void;
   isParticipantUnconfirmed: () => boolean;
+  handleDeleteLink: (tripId: string | undefined, id: string) => void;
 }
 
 export const TripContext = createContext<TripContextType | undefined>(
@@ -170,6 +173,8 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   const [loadingTrips, setLoadingTrips] = useState(false);
   const [isConfirmParticipationModalOpen, setIsConfirmParticipationModalOpen] =
     useState(false);
+  const [loadingLinkId, setLoadingLinkId] = useState<string | null>(null);
+
 
   const isParticipantUnconfirmed = () => {
     const guest = participants.find(
@@ -200,6 +205,23 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
 
   const handleShowConfirmParticipationModal = (value: boolean) => {
     setIsConfirmParticipationModalOpen(value);
+  };
+
+  const handleDeleteLink = (tripId: string | undefined, id: string) => {
+    setLoadingLinkId(id);
+
+    api
+      .delete(`/trips/${tripId}/links/${id}`)
+      .then(({ data }) => {
+        setLinks(data);
+        toast.success("Link deletado com sucesso");
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setLoadingLinkId(null)
+      });
   };
 
   const handleConfirmParticipation = (tripId: string | undefined) => {
@@ -572,6 +594,8 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         handleShowConfirmParticipationModal,
         isConfirmParticipationModalOpen,
         isParticipantUnconfirmed,
+        handleDeleteLink,
+        loadingLinkId
       }}
     >
       {children}
