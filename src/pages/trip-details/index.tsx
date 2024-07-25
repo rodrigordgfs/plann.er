@@ -11,12 +11,11 @@ import useTripContext from "../../hooks/use-trip-context";
 import { UpdateActivityModal } from "./update-activity-modal";
 import { TripDetails } from "./trip-details";
 import { Skeleton } from "../../components/skeleton";
-import useAuthContext from "../../hooks/use-auth-context";
 
 export function TripDetailsPage() {
   const { tripId } = useParams();
   const {
-    participants,
+    isParticipantUnconfirmed,
     isActivityModalOpen,
     handleActivityModalOpen,
     isLinkModalOpen,
@@ -28,24 +27,12 @@ export function TripDetailsPage() {
     handleShowConfirmParticipationModal,
     isConfirmParticipationModalOpen,
   } = useTripContext();
-  const { userId } = useAuthContext();
 
   useEffect(() => {
     if (tripId) {
       handleFetchTripData(tripId);
     }
   }, [handleFetchTripData, tripId]);
-
-  const showConfirmParticipation = () => {
-    const guest = participants.find(
-      (participant) => participant?.user?.id === userId
-    );
-
-    if (guest && !guest.is_owner) {
-      return !guest.is_confirmed;
-    }
-    return false
-  };
 
   return (
     <>
@@ -65,7 +52,7 @@ export function TripDetailsPage() {
               <h2 className="text-3xl font-semibold">Atividades</h2>
               <div className="hidden lg:block">
                 <div className="flex items-center gap-2">
-                  {showConfirmParticipation() && (
+                  {isParticipantUnconfirmed() && (
                     <Button
                       onClick={() => handleShowConfirmParticipationModal(true)}
                       variant="primary"
@@ -74,18 +61,20 @@ export function TripDetailsPage() {
                       Confirmar participação
                     </Button>
                   )}
-                  <Button
-                    variant="primary"
-                    onClick={() => handleActivityModalOpen(true)}
-                  >
-                    <Plus className="size-5" />
-                    Cadastrar Atividade
-                  </Button>
+                  {!isParticipantUnconfirmed() && (
+                    <Button
+                      variant="primary"
+                      onClick={() => handleActivityModalOpen(true)}
+                    >
+                      <Plus className="size-5" />
+                      Cadastrar Atividade
+                    </Button>
+                  )}
                 </div>
               </div>
               <div className="block lg:hidden">
                 <div className="flex items-center gap-2">
-                  {showConfirmParticipation() && (
+                  {isParticipantUnconfirmed() && (
                     <Button
                       onClick={() => handleShowConfirmParticipationModal(true)}
                       variant="primary"

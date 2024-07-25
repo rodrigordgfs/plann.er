@@ -4,8 +4,12 @@ import { ManageGuestsModal } from "./manage-guests-modal";
 import useTripContext from "../../hooks/use-trip-context";
 
 export function Guest() {
-  const { participants, isManageGuestsModalOpen, handleChangeGuestsModal } =
-    useTripContext();
+  const {
+    participants,
+    isManageGuestsModalOpen,
+    handleChangeGuestsModal,
+    isParticipantUnconfirmed,
+  } = useTripContext();
 
   return (
     <>
@@ -35,14 +39,16 @@ export function Guest() {
             );
           })}
         </div>
-        <Button
-          onClick={() => handleChangeGuestsModal(true)}
-          variant="secondary"
-          size="full"
-        >
-          <UserCog className="size-5 text-zinc-200" />
-          Gerenciar convidados
-        </Button>
+        {!isParticipantUnconfirmed() && (
+          <Button
+            onClick={() => handleChangeGuestsModal(true)}
+            variant="secondary"
+            size="full"
+          >
+            <UserCog className="size-5 text-zinc-200" />
+            Gerenciar convidados
+          </Button>
+        )}
       </div>
       {isManageGuestsModalOpen && <ManageGuestsModal />}
     </>

@@ -5,7 +5,11 @@ import useTripContext from "../../hooks/use-trip-context";
 import { Activity } from "../../context/trip-context";
 
 export function Activities() {
-  const { activities, handleUpdateActivityModalOpen } = useTripContext();
+  const {
+    activities,
+    handleUpdateActivityModalOpen,
+    isParticipantUnconfirmed,
+  } = useTripContext();
 
   return (
     <div className="space-y-8">
@@ -30,7 +34,9 @@ export function Activities() {
                       <div key={`${activity.id}${index.toString()}`}>
                         <div
                           onClick={() =>
-                            handleUpdateActivityModalOpen(true, activity)
+                            !isParticipantUnconfirmed()
+                              ? handleUpdateActivityModalOpen(true, activity)
+                              : null
                           }
                           className="px-5 py-2.5 bg-zinc-900 hover:bg-zinc-800 transition-all cursor-pointer rounded-xl shadow-shape flex items-center gap-3"
                         >

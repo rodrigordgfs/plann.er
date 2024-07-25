@@ -3,7 +3,8 @@ import { Button } from "../../components/button";
 import useTripContext from "../../hooks/use-trip-context";
 
 export function ImportantLinks() {
-  const { links, handleLinkModalOpen } = useTripContext();
+  const { links, handleLinkModalOpen, isParticipantUnconfirmed } =
+    useTripContext();
 
   return (
     <div className="space-y-6">
@@ -42,14 +43,16 @@ export function ImportantLinks() {
           </div>
         )}
       </div>
-      <Button
-        onClick={() => handleLinkModalOpen(true)}
-        variant="secondary"
-        size="full"
-      >
-        <Plus className="size-5 text-zinc-200" />
-        Cadastrar novo link
-      </Button>
+      {!isParticipantUnconfirmed() && (
+        <Button
+          onClick={() => handleLinkModalOpen(true)}
+          variant="secondary"
+          size="full"
+        >
+          <Plus className="size-5 text-zinc-200" />
+          Cadastrar novo link
+        </Button>
+      )}
     </div>
   );
 }

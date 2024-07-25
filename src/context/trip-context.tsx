@@ -126,6 +126,7 @@ export interface TripContextType {
   handleGeUserTrips: (user_id: string | undefined) => void;
   handleConfirmParticipation: (tripId: string | undefined) => void;
   handleShowConfirmParticipationModal: (value: boolean) => void;
+  isParticipantUnconfirmed: () => boolean;
 }
 
 export const TripContext = createContext<TripContextType | undefined>(
@@ -169,6 +170,17 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   const [loadingTrips, setLoadingTrips] = useState(false);
   const [isConfirmParticipationModalOpen, setIsConfirmParticipationModalOpen] =
     useState(false);
+
+  const isParticipantUnconfirmed = () => {
+    const guest = participants.find(
+      (participant) => participant?.user?.id === userId
+    );
+
+    if (guest && !guest.is_owner) {
+      return !guest.is_confirmed;
+    }
+    return false;
+  };
 
   const handleGuestsModalOpen = (value: boolean) => {
     setIsGuestsModalOpen(value);
@@ -559,6 +571,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         handleConfirmParticipation,
         handleShowConfirmParticipationModal,
         isConfirmParticipationModalOpen,
+        isParticipantUnconfirmed,
       }}
     >
       {children}
