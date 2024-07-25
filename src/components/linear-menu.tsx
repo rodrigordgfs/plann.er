@@ -25,14 +25,14 @@ export function LinearMenu() {
 
   return (
     <div
-      className="text-zinc-200 flex items-center"
+      className="text-zinc-200 flex items-center gap-2"
       role="menu"
       aria-orientation="vertical"
       aria-labelledby="menu-button"
     >
       <button
         onClick={handleHome}
-        className="flex items-center gap-2 px-4 py-2 text-md rounded-lg text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
+        className="flex items-center gap-2 p-2 text-md rounded-lg text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
         role="menuitem"
       >
         <Home />
@@ -40,7 +40,7 @@ export function LinearMenu() {
       </button>
       <button
         onClick={handleProfile}
-        className="flex items-center gap-2 px-4 py-2 text-md rounded-lg text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
+        className="flex items-center gap-2 p-2 text-md rounded-lg text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
         role="menuitem"
       >
         <User />
@@ -48,7 +48,7 @@ export function LinearMenu() {
       </button>
       <button
         onClick={handleSettings}
-        className="flex items-center gap-2 px-4 py-2 text-md rounded-lg text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
+        className="flex items-center gap-2 p-2 text-md rounded-lg text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
         role="menuitem"
       >
         <Settings />
@@ -56,7 +56,7 @@ export function LinearMenu() {
       </button>
       <button
         onClick={handleLogOutAndClose}
-        className="flex items-center gap-2 px-4 py-2 text-md rounded-lg text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
+        className="flex items-center gap-2 p-2 text-md rounded-lg text-left hover:bg-zinc-700 focus:outline-none focus:bg-zinc-700 transition-all"
         role="menuitem"
       >
         <LogOut />
