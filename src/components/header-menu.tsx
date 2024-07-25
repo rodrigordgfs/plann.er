@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { DropdownMenu } from "./dropdown-menu";
+import { LinearMenu } from "./linear-menu";
 
 export function HeaderMenu() {
   const navigate = useNavigate();
@@ -16,7 +17,12 @@ export function HeaderMenu() {
         alt="Plann.er logo"
         className="h-8 cursor-pointer"
       />
-      <DropdownMenu />
+      <div className="hidden sm:block">
+        <LinearMenu />
+      </div>
+      <div className="block sm:hidden">
+        <DropdownMenu />
+      </div>
     </div>
   );
 }
