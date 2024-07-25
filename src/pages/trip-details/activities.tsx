@@ -16,7 +16,7 @@ export function Activities() {
             <div key={date} className="space-y-2.5">
               <div className="flex gap-2 items-baseline">
                 <span className="text-xl text-zinc-300 font-semibold">
-                  {format(parsedDate, "'Dia' d'/'MMM")}
+                  {format(parsedDate, "'Dia' d'/'MMM", { locale: ptBR })}
                 </span>
                 <span className="text-xs text-zinc-500">
                   {format(parsedDate, "EEEE", { locale: ptBR })}

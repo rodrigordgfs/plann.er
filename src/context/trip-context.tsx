@@ -10,6 +10,7 @@ export interface Trip {
   destination: string;
   starts_at: string;
   ends_at: string;
+  participants: Participant[];
   _count: {
     participants: number;
     activities: number;
@@ -36,10 +37,12 @@ interface Link {
 interface Participant {
   id: string;
   user: {
+    id: string;
     name: string | null;
     email: string;
   };
   is_confirmed: boolean;
+  is_owner: boolean;
 }
 
 interface ApiError {

@@ -6,6 +6,7 @@ import { ptBR } from "date-fns/locale";
 import { Calendar, Link2, MapPin, NotebookTabsIcon, User2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { Trip } from "../../context/trip-context";
+import useAuthContext from "../../hooks/use-auth-context";
 
 type TripCardProps = {
   trip: Trip;
@@ -13,6 +14,7 @@ type TripCardProps = {
 
 export function TripCard({ trip }: TripCardProps) {
   const navigate = useNavigate();
+  const { userId } = useAuthContext();
 
   const displayedDate =
     trip?.starts_at && trip?.ends_at
@@ -28,15 +30,22 @@ export function TripCard({ trip }: TripCardProps) {
     const endsAt = parseISO(format(parseISO(trip?.ends_at), "yyyy-MM-dd"));
     const currentDate = parseISO(format(new Date(), "yyyy-MM-dd"));
 
-    if (isBefore(currentDate, startsAt)) {
+    const isUserUnconfirmed = trip?.participants.some(
+      (participant) =>
+        participant.user.id === userId && !participant.is_confirmed
+    );
+
+    if (isUserUnconfirmed) {
+      return "border-l-amber-500";
+    } else if (isBefore(currentDate, startsAt)) {
       return "border-l-blue-500";
-    } else if (isAfter(currentDate, endsAt)) {
-      return "border-l-red-500";
     } else if (
       (isEqual(currentDate, startsAt) || isAfter(currentDate, startsAt)) &&
       (isEqual(currentDate, endsAt) || isBefore(currentDate, endsAt))
     ) {
       return "border-l-green-500";
+    } else if (isAfter(currentDate, endsAt)) {
+      return "border-l-red-500";
     } else {
       return "border-l-zinc-900";
     }
