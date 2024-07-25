@@ -75,7 +75,9 @@ export interface TripContextType {
   isCreateTripModalOpen: boolean;
   isGuestsModalOpen: boolean;
   loadingConfirmTrip: boolean;
+  loadingConfirmParticipation: boolean;
   loadingTrips: boolean;
+  isConfirmParticipationModalOpen: boolean;
   handleAddGuestInvite: (tripId: string | undefined, email: string) => void;
   handleRemoveGuestInvite: (email: string) => void;
   handleActivityModalOpen: (value: boolean) => void;
@@ -122,6 +124,8 @@ export interface TripContextType {
     emails_to_invite: string[]
   ) => Promise<string | undefined>;
   handleGeUserTrips: (user_id: string | undefined) => void;
+  handleConfirmParticipation: (tripId: string | undefined) => void;
+  handleShowConfirmParticipationModal: (value: boolean) => void;
 }
 
 export const TripContext = createContext<TripContextType | undefined>(
@@ -160,7 +164,11 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   ] = useState(false);
   const [isGuestsModalOpen, setIsGuestsModalOpen] = useState(false);
   const [loadingConfirmTrip, setLoadingConfirmTrip] = useState(false);
+  const [loadingConfirmParticipation, setloadingConfirmParticipation] =
+    useState(false);
   const [loadingTrips, setLoadingTrips] = useState(false);
+  const [isConfirmParticipationModalOpen, setIsConfirmParticipationModalOpen] =
+    useState(false);
 
   const handleGuestsModalOpen = (value: boolean) => {
     setIsGuestsModalOpen(value);
@@ -176,6 +184,28 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
 
   const handleLinkModalOpen = (value: boolean) => {
     setIsLinkModalOpen(value);
+  };
+
+  const handleShowConfirmParticipationModal = (value: boolean) => {
+    setIsConfirmParticipationModalOpen(value);
+  };
+
+  const handleConfirmParticipation = (tripId: string | undefined) => {
+    setloadingConfirmParticipation(true);
+
+    api
+      .patch(`/trips/${tripId}/participants/${userId}/confirm`)
+      .then(({ data }) => {
+        setParticipants(data);
+        handleShowConfirmParticipationModal(false);
+        toast.success("Participação confirmada com sucesso");
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setloadingConfirmParticipation(false);
+      });
   };
 
   const handleGeUserTrips = useCallback(async (user_id: string | undefined) => {
@@ -524,6 +554,10 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         loadingConfirmTrip,
         handleGeUserTrips,
         loadingTrips,
+        loadingConfirmParticipation,
+        handleConfirmParticipation,
+        handleShowConfirmParticipationModal,
+        isConfirmParticipationModalOpen,
       }}
     >
       {children}
