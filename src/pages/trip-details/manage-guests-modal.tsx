@@ -1,6 +1,5 @@
 import { AtSign, LoaderCircleIcon, Plus, X } from "lucide-react";
-import { FormEvent, useState } from "react";
-import { api } from "../../lib/axios";
+import { FormEvent } from "react";
 import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Button } from "../../components/button";
@@ -15,8 +14,8 @@ export function ManageGuestsModal() {
     handleChangeGuestsModal,
     participants,
     handleRemoveGuestInvite,
+    removingGuestId,
   } = useTripContext();
-  const [removingGuestId, setRemovingGuestId] = useState<string | null>(null);
 
   const handleInviteGuest = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -33,18 +32,7 @@ export function ManageGuestsModal() {
   };
 
   const handleRemoveGuest = (participantId: string, email: string) => {
-    setRemovingGuestId(participantId);
-    api
-      .delete(`/trips/${tripId}/participants/${participantId}`)
-      .then(() => {
-        handleRemoveGuestInvite(email);
-      })
-      .catch((e) => {
-        toast.error(e.response.data.message);
-      })
-      .finally(() => {
-        setRemovingGuestId(null);
-      });
+    handleRemoveGuestInvite(email, participantId, tripId);
   };
 
   return (

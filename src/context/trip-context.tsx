@@ -82,8 +82,13 @@ export interface TripContextType {
   loadingLinkId: string | null;
   deletingTrip: boolean;
   loadingFetchUsers: boolean;
+  removingGuestId: string | null;
   handleAddGuestInvite: (tripId: string | undefined, email: string) => void;
-  handleRemoveGuestInvite: (email: string) => void;
+  handleRemoveGuestInvite: (
+    email: string,
+    participantId: string,
+    tripId: string | undefined
+  ) => void;
   handleActivityModalOpen: (value: boolean) => void;
   handleAddNewActivity: (
     dtripId: string | undefined,
@@ -183,6 +188,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   const [loadingLinkId, setLoadingLinkId] = useState<string | null>(null);
   const [deletingTrip, setDeletingTrip] = useState(false);
   const [loadingFetchUsers, setLoadingFetchUsers] = useState(false);
+  const [removingGuestId, setRemovingGuestId] = useState<string | null>(null);
 
   const handleCheckEmailUserExists = async (email: string | undefined) => {
     try {
@@ -422,10 +428,27 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
       });
   };
 
-  const handleRemoveGuestInvite = (email: string) => {
-    setParticipants(
-      participants?.filter((participant) => participant.user.email !== email)
-    );
+  const handleRemoveGuestInvite = (
+    email: string,
+    participantId: string,
+    tripId: string | undefined
+  ) => {
+    setRemovingGuestId(participantId);
+    api
+      .delete(`/trips/${tripId}/participants/${participantId}`)
+      .then(() => {
+        setParticipants(
+          participants?.filter(
+            (participant) => participant.user.email !== email
+          )
+        );
+      })
+      .catch((e) => {
+        toast.error(e.response.data.message);
+      })
+      .finally(() => {
+        setRemovingGuestId(null);
+      });
   };
 
   const handleFetchTripData = useCallback(
@@ -643,6 +666,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         handleDeleteTrip,
         handleCheckEmailUserExists,
         loadingFetchUsers,
+        removingGuestId,
       }}
     >
       {children}
