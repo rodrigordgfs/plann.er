@@ -81,6 +81,7 @@ export interface TripContextType {
   isConfirmParticipationModalOpen: boolean;
   loadingLinkId: string | null;
   deletingTrip: boolean;
+  loadingFetchUsers: boolean;
   handleAddGuestInvite: (tripId: string | undefined, email: string) => void;
   handleRemoveGuestInvite: (email: string) => void;
   handleActivityModalOpen: (value: boolean) => void;
@@ -135,6 +136,7 @@ export interface TripContextType {
     tripId: string | undefined,
     userId: string | undefined
   ) => Promise<boolean | undefined>;
+  handleCheckEmailUserExists: (email: string | undefined) => Promise<boolean>;
 }
 
 export const TripContext = createContext<TripContextType | undefined>(
@@ -180,6 +182,24 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     useState(false);
   const [loadingLinkId, setLoadingLinkId] = useState<string | null>(null);
   const [deletingTrip, setDeletingTrip] = useState(false);
+  const [loadingFetchUsers, setLoadingFetchUsers] = useState(false);
+
+  const handleCheckEmailUserExists = async (email: string | undefined) => {
+    try {
+      setLoadingFetchUsers(true);
+      const { data } = await api.get("/users", {
+        params: { email },
+      });
+
+      setLoadingFetchUsers(false);
+      return data.length > 0;
+    } catch (error) {
+      setLoadingFetchUsers(false);
+      const apiError = error as ApiError;
+      toast.error(apiError.response.data.message);
+      return false;
+    }
+  };
 
   const handleDeleteTrip = async (
     tripId: string | undefined,
@@ -621,6 +641,8 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         loadingLinkId,
         deletingTrip,
         handleDeleteTrip,
+        handleCheckEmailUserExists,
+        loadingFetchUsers,
       }}
     >
       {children}

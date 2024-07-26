@@ -49,7 +49,7 @@ export function TripDetails() {
               <span className="block text-zinc-400 truncatetransition-all">
                 {hasOwnerPermission
                   ? "Você é o administrador"
-                  : "Você um participante"}
+                  : "Você é um participante"}
               </span>
             </div>
           </div>

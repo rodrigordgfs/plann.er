@@ -96,9 +96,9 @@ export function ManageGuestsModal() {
 
         <form
           onSubmit={(event) => handleInviteGuest(event)}
-          className="p-2.5 bg-zinc-950 border shadow-shape border-zinc-800 rounded-lg flex items-center gap-2"
+          className="p-2.5 bg-zinc-950 border shadow-shape border-zinc-800 rounded-lg flex flex-col md:flex-row items-center gap-2"
         >
-          <div className="px-2 flex items-center flex-1 gap-2">
+          <div className="px-2 py-2 md:py-0 flex items-center w-full gap-2">
             <AtSign className="size-5 text-zinc-400" />
             <input
               type="email"
@@ -107,15 +107,28 @@ export function ManageGuestsModal() {
               className="bg-transparent text-lg placeholder-zinc-400 flex-1 outline-none"
             />
           </div>
-          <Button
-            loading={savingGuest}
-            type="submit"
-            variant="primary"
-            size="default"
-          >
-            Convidar
-            <Plus className="size-5" />
-          </Button>
+          <div className="flex w-full md:hidden">
+            <Button
+              loading={savingGuest}
+              type="submit"
+              variant="primary"
+              size="full"
+            >
+              Convidar
+              <Plus className="size-5" />
+            </Button>
+          </div>
+          <div className="hidden md:flex">
+            <Button
+              loading={savingGuest}
+              type="submit"
+              variant="primary"
+              size="default"
+            >
+              Convidar
+              <Plus className="size-5" />
+            </Button>
+          </div>
         </form>
       </div>
     </div>

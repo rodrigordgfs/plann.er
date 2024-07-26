@@ -1,7 +1,8 @@
 import { AtSign, Plus, X } from "lucide-react";
-import { FormEvent } from "react";
+import { FormEvent, useRef } from "react";
 import useTripContext from "../../hooks/use-trip-context";
 import { toast } from "react-toastify";
+import { Button } from "../../components/button";
 
 interface InviteGuestsModalProps {
   handleRemoveEmailsFromIvites: (newEmailList: string[]) => void;
@@ -14,9 +15,15 @@ export function InviteGuestsModal({
   handleAddEmailToInvite,
   handleRemoveEmailsFromIvites,
 }: InviteGuestsModalProps) {
-  const { handleGuestsModalOpen } = useTripContext();
+  const {
+    handleGuestsModalOpen,
+    handleCheckEmailUserExists,
+    loadingFetchUsers,
+  } = useTripContext();
 
-  const handleSubmitEmail = (event: FormEvent<HTMLFormElement>) => {
+  const formRef = useRef<HTMLFormElement>(null);
+
+  const handleSubmitEmail = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     const email = data.get("email")?.toString();
@@ -31,9 +38,12 @@ export function InviteGuestsModal({
       return;
     }
 
-    handleAddEmailToInvite(email);
-
-    event.currentTarget.reset();
+    if (await handleCheckEmailUserExists(email)) {
+      handleAddEmailToInvite(email);
+      formRef.current?.reset();
+    } else {
+      toast.warning("Usuário não encontrado na plataforma");
+    }
   };
 
   const handleRemoveEmail = (emailToRemove: string) => {
@@ -87,10 +97,11 @@ export function InviteGuestsModal({
         <div className="w-full h-px bg-zinc-800" />
 
         <form
-          onSubmit={(event) => handleSubmitEmail(event)}
-          className="p-2.5 bg-zinc-950 border border-zinc-800 rounded-lg flex items-center gap-2"
+          ref={formRef}
+          onSubmit={handleSubmitEmail}
+          className="p-2.5 bg-zinc-950 border border-zinc-800 shadow-shape rounded-lg flex flex-col md:flex-row items-center gap-2"
         >
-          <div className="px-2 flex items-center flex-1 gap-2">
+          <div className="p-2 md:py-0 flex items-center w-full gap-2">
             <AtSign className="size-5 text-zinc-400" />
             <input
               type="email"
@@ -99,13 +110,28 @@ export function InviteGuestsModal({
               className="bg-transparent text-lg placeholder-zinc-400 flex-1 outline-none"
             />
           </div>
-          <button
-            type="submit"
-            className="bg-lime-300 hover:bg-lime-400 transition-all text-lime-950 rounded-lg px-5 py-2 font-medium flex items-center gap-2"
-          >
-            Convidar
-            <Plus className="size-5" />
-          </button>
+          <div className="flex w-full md:hidden">
+            <Button
+              loading={loadingFetchUsers}
+              type="submit"
+              variant="primary"
+              size="full"
+            >
+              Convidar
+              <Plus className="size-5" />
+            </Button>
+          </div>
+          <div className="hidden md:flex">
+            <Button
+              loading={loadingFetchUsers}
+              type="submit"
+              variant="primary"
+              size="default"
+            >
+              Convidar
+              <Plus className="size-5" />
+            </Button>
+          </div>
         </form>
       </div>
     </div>
