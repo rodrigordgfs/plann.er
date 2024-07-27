@@ -4,6 +4,7 @@ import { LoginPage } from "../pages/login";
 import { RegisterPage } from "../pages/register";
 import { ProtectedRoute } from "../layout/protected";
 import { DashboardPage } from "../pages/dashboard";
+import { ProfilePage } from "../pages/profile";
 
 export const router = createBrowserRouter([
   {
@@ -23,7 +24,11 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute element={<DashboardPage />} />,
   },
   {
+    path: "/profile",
+    element: <ProtectedRoute element={<ProfilePage />} />,
+  },
+  {
     path: "/trips/:tripId",
-    element: <ProtectedRoute element={<TripDetailsPage />} />
+    element: <ProtectedRoute element={<TripDetailsPage />} />,
   },
 ]);

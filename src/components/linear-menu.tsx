@@ -8,7 +8,7 @@ export function LinearMenu() {
   const { handleLogOut } = useAuthContext();
 
   const handleProfile = () => {
-    toast.info("Em breve");
+    navigate("/profile");
   };
 
   const handleSettings = () => {
@@ -16,7 +16,7 @@ export function LinearMenu() {
   };
 
   const handleHome = () => {
-    navigate("/dashboard", { replace: true });
+    navigate("/dashboard");
   };
 
   const handleLogOutAndClose = () => {
