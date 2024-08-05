@@ -1,16 +1,17 @@
 import { X } from "lucide-react";
 import { Button } from "../../components/button";
 import useTripContext from "../../hooks/use-trip-context";
-import { useParams } from "react-router-dom";
+import useAuthContext from "../../hooks/use-auth-context";
 
 export function ConfirmParticipationModal() {
-  const { tripId } = useParams();
-
   const {
     loadingConfirmParticipation,
     handleConfirmParticipation,
     handleShowConfirmParticipationModal,
   } = useTripContext();
+
+  const { userId } = useAuthContext()
+
   return (
     <div className="fixed inset-0 bg-black/60 flex items-center justify-center px-4">
       <div className="w-[640px] rounded-xl py-5 px-6 shadow-shape bg-zinc-900 space-y-5">
@@ -36,7 +37,7 @@ export function ConfirmParticipationModal() {
           </Button>
           <Button
             loading={loadingConfirmParticipation}
-            onClick={() => handleConfirmParticipation(tripId)}
+            onClick={() => handleConfirmParticipation(userId)}
             type="button"
             variant="primary"
             size="full"

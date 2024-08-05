@@ -1,7 +1,6 @@
 import { Calendar, Tag, X } from "lucide-react";
 import { Button } from "../../components/button";
 import { FormEvent, useState } from "react";
-import { useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { TimePicker } from "../../components/timePicker";
 import { DayPicker } from "react-day-picker";
@@ -11,7 +10,6 @@ import useTripContext from "../../hooks/use-trip-context";
 import { Activity } from "../../context/trip-context";
 
 export function UpdateActivityModal() {
-  const { tripId } = useParams();
   const {
     trip,
     activitySelected,
@@ -117,7 +115,6 @@ export function UpdateActivityModal() {
               <Button
                 onClick={() =>
                   handleToogleActivityDone(
-                    tripId,
                     activity?.id,
                     !activity?.is_done
                   )

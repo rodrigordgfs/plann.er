@@ -41,7 +41,7 @@ interface Participant {
     id: string;
     name: string | null;
     email: string;
-    image_url: string | null
+    image_url: string | null;
   };
   is_confirmed: boolean;
   is_owner: boolean;
@@ -85,11 +85,7 @@ export interface TripContextType {
   loadingFetchUsers: boolean;
   removingGuestId: string | null;
   handleAddGuestInvite: (tripId: string | undefined, email: string) => void;
-  handleRemoveGuestInvite: (
-    email: string,
-    participantId: string,
-    tripId: string | undefined
-  ) => void;
+  handleRemoveGuestInvite: (email: string, participantId: string) => void;
   handleActivityModalOpen: (value: boolean) => void;
   handleAddNewActivity: (
     dtripId: string | undefined,
@@ -108,7 +104,6 @@ export interface TripContextType {
     activity: Activity | null
   ) => void;
   handleToogleActivityDone: (
-    tripId: string | undefined,
     activityId: string | undefined,
     is_done: boolean
   ) => void;
@@ -134,13 +129,12 @@ export interface TripContextType {
     emails_to_invite: string[]
   ) => Promise<string | undefined>;
   handleGeUserTrips: (user_id: string | undefined) => void;
-  handleConfirmParticipation: (tripId: string | undefined) => void;
+  handleConfirmParticipation: (userId: string | undefined) => void;
   handleShowConfirmParticipationModal: (value: boolean) => void;
   isParticipantUnconfirmed: () => boolean;
-  handleDeleteLink: (tripId: string | undefined, id: string) => void;
+  handleDeleteLink: (id: string) => void;
   handleDeleteTrip: (
-    tripId: string | undefined,
-    userId: string | undefined
+    tripId: string | undefined
   ) => Promise<boolean | undefined>;
   handleCheckEmailUserExists: (email: string | undefined) => Promise<boolean>;
 }
@@ -208,15 +202,13 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     }
   };
 
-  const handleDeleteTrip = async (
-    tripId: string | undefined,
-    userId: string | undefined
-  ) => {
+  const handleDeleteTrip = async (tripId: string | undefined) => {
     try {
       setDeletingTrip(true);
 
-      await api.delete(`/trips/${tripId}/participant/${userId}`);
+      await api.delete(`/trips/${tripId}`);
       toast.success("Viagem deletada com sucesso");
+      setIsUpdateDestinationTripDateModalOpen(false);
       setDeletingTrip(false);
       return true;
     } catch (error) {
@@ -227,7 +219,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   };
 
   const isParticipantUnconfirmed = () => {
-    const guest = participants.find(
+    const guest = participants?.find(
       (participant) => participant?.user?.id === userId
     );
 
@@ -257,14 +249,21 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     setIsConfirmParticipationModalOpen(value);
   };
 
-  const handleDeleteLink = (tripId: string | undefined, id: string) => {
+  const handleDeleteLink = (id: string) => {
     setLoadingLinkId(id);
 
     api
-      .delete(`/trips/${tripId}/links/${id}`)
-      .then(({ data }) => {
-        setLinks(data);
-        toast.success("Link deletado com sucesso");
+      .delete(`/links/${id}`)
+      .then(() => {
+        api
+          .get("/links", { params: { trip_id: trip?.id } })
+          .then(({ data }) => {
+            setLinks(data);
+            toast.success("Link deletado com sucesso");
+          })
+          .catch((e) => {
+            toast.error(e.response.data.message);
+          });
       })
       .catch((e) => {
         toast.error(e.response.data.message);
@@ -274,15 +273,26 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
       });
   };
 
-  const handleConfirmParticipation = (tripId: string | undefined) => {
+  const handleConfirmParticipation = (userId: string | undefined) => {
     setloadingConfirmParticipation(true);
 
+    const participantId = participants?.find(
+      (participant) => participant.user.id === userId
+    )?.id;
+
     api
-      .patch(`/trips/${tripId}/participants/${userId}/confirm`)
-      .then(({ data }) => {
-        setParticipants(data);
-        handleShowConfirmParticipationModal(false);
-        toast.success("Participação confirmada com sucesso");
+      .patch(`/participants/${participantId}/confirm`)
+      .then(() => {
+        api
+          .get("/participants", { params: { trip_id: trip?.id } })
+          .then(({ data }) => {
+            setParticipants(data);
+            handleShowConfirmParticipationModal(false);
+            toast.success("Participação confirmada com sucesso");
+          })
+          .catch((e) => {
+            toast.error(e.response.data.message);
+          });
       })
       .catch((e) => {
         toast.error(e.response.data.message);
@@ -349,7 +359,8 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     setSavingLink(true);
 
     api
-      .post(`/trips/${tripId}/links`, {
+      .post("/links", {
+        trip_id: tripId,
         title,
         url,
       })
@@ -382,7 +393,8 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     setSavingActivity(true);
 
     api
-      .post(`/trips/${tripId}/activities`, {
+      .post("/activities", {
+        trip_id: tripId,
         title,
         occurs_at,
       })
@@ -414,12 +426,20 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     setSavingGuest(true);
 
     api
-      .post(`/trips/${tripId}/invites`, {
+      .post("/participants", {
+        trip_id: tripId,
         email,
       })
-      .then(({ data }) => {
-        setParticipants(data);
-        toast.success("Convidado adicionado com sucesso");
+      .then(() => {
+        api
+          .get("/participants", { params: { trip_id: tripId } })
+          .then(({ data }) => {
+            setParticipants(data);
+            toast.success("Convidado adicionado com sucesso");
+          })
+          .catch((e) => {
+            toast.error(e.response.data.message);
+          });
       })
       .catch((e) => {
         toast.error(e.response.data.message);
@@ -429,14 +449,10 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
       });
   };
 
-  const handleRemoveGuestInvite = (
-    email: string,
-    participantId: string,
-    tripId: string | undefined
-  ) => {
+  const handleRemoveGuestInvite = (email: string, participantId: string) => {
     setRemovingGuestId(participantId);
     api
-      .delete(`/trips/${tripId}/participants/${participantId}`)
+      .delete(`/participants/${participantId}`)
       .then(() => {
         setParticipants(
           participants?.filter(
@@ -461,9 +477,9 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         const [tripRes, activitiesRes, linksRes, participantsRes] =
           await Promise.all([
             api.get(`/trips/${tripId}`),
-            api.get(`/trips/${tripId}/activities`),
-            api.get(`/trips/${tripId}/links`),
-            api.get(`/trips/${tripId}/participants`),
+            api.get("/activities", { params: { trip_id: tripId } }),
+            api.get("/links", { params: { trip_id: tripId } }),
+            api.get("/participants", { params: { trip_id: tripId } }),
           ]);
 
         setTrip(tripRes.data);
@@ -495,12 +511,15 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
     setUpdatingActivity(true);
 
     try {
-      await api.put(`/trips/${trip.id}/activities/${activityId}`, {
+      await api.put(`/activities/${activityId}`, {
+        trip_id: trip.id,
         title,
         occurs_at,
       });
 
-      const { data } = await api.get(`/trips/${trip.id}/activities`);
+      const { data } = await api.get("/activities", {
+        params: { trip_id: trip.id },
+      });
 
       setActivities(data);
 
@@ -518,15 +537,14 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
   };
 
   const handleToogleActivityDone = async (
-    tripId: string | undefined,
     activityId: string | undefined,
     is_done: boolean
   ) => {
-    if (!tripId || !activityId) return;
+    if (!activityId) return;
 
     setTogglingActivityDone(true);
     try {
-      await api.patch(`/trips/${tripId}/activities/${activityId}/toggle`, {
+      await api.patch(`/activities/${activityId}/done`, {
         is_done,
       });
       toast.success(
@@ -585,7 +603,7 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
       .then(() => {
         Promise.all([
           api.get(`/trips/${tripId}`),
-          api.get(`/trips/${tripId}/activities`),
+          api.get(`/activities`, { params: { trip_id: tripId } }),
         ])
           .then(([{ data: tripData }, { data: activitiesData }]) => {
             setTrip(tripData);

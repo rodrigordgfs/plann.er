@@ -6,7 +6,6 @@ import { DateRange, DayPicker } from "react-day-picker";
 import { ptBR } from "date-fns/locale";
 import { format } from "date-fns";
 import useTripContext from "../../hooks/use-trip-context";
-import useAuthContext from "../../hooks/use-auth-context";
 
 export function UpdateDestinationAndTripDateModal() {
   const { tripId } = useParams();
@@ -20,7 +19,6 @@ export function UpdateDestinationAndTripDateModal() {
     deletingTrip,
     handleDeleteTrip,
   } = useTripContext();
-  const { userId } = useAuthContext();
 
   const today = new Date();
 
@@ -60,7 +58,7 @@ export function UpdateDestinationAndTripDateModal() {
   };
 
   const handleDeleteUserTrip = async () => {
-    const deleted = await handleDeleteTrip(tripId, userId);
+    const deleted = await handleDeleteTrip(tripId);
     if (deleted) {
       navigate("/dashboard", { replace: true });
     }

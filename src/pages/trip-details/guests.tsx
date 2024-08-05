@@ -19,7 +19,7 @@ export function Guest() {
           {participants?.map((participant, index) => {
             return (
               <div
-                key={index}
+                key={participant.id}
                 className="flex items-center justify-between gap-4"
               >
                 {participant.user.image_url ? (

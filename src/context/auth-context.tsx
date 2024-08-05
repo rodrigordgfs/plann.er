@@ -132,7 +132,7 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
     setIsAuthLoading(true);
 
     api
-      .post("/sign-in", {
+      .post("/auth/login", {
         email,
         password,
       })
@@ -153,7 +153,7 @@ export const AuthContextProvider: FC<{ children: ReactNode }> = ({
     setIsAuthLoading(true);
 
     api
-      .post("/sign-up", {
+      .post("/auth/register", {
         name,
         email,
         password,

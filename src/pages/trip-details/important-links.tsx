@@ -1,11 +1,8 @@
 import { Link2, LoaderCircle, Plus, X } from "lucide-react";
 import { Button } from "../../components/button";
 import useTripContext from "../../hooks/use-trip-context";
-import { useParams } from "react-router-dom";
 
 export function ImportantLinks() {
-  const { tripId } = useParams();
-
   const {
     links,
     handleLinkModalOpen,
@@ -44,7 +41,7 @@ export function ImportantLinks() {
                     <>
                       <Link2 className="size-5 text-zinc-400 shrink-0 group-hover:hidden" />
                       <X
-                        onClick={() => handleDeleteLink(tripId, link.id)}
+                        onClick={() => handleDeleteLink(link.id)}
                         className="size-5 text-zinc-400 shrink-0 hidden group-hover:block cursor-pointer"
                       />
                     </>

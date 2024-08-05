@@ -32,7 +32,7 @@ export function ManageGuestsModal() {
   };
 
   const handleRemoveGuest = (participantId: string, email: string) => {
-    handleRemoveGuestInvite(email, participantId, tripId);
+    handleRemoveGuestInvite(email, participantId);
   };
 
   return (
