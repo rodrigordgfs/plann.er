@@ -335,15 +335,10 @@ export const TripContextProvider: FC<{ children: ReactNode }> = ({
         emails_to_invite,
         user_id: userId,
       });
-
-      const { tripId } = data;
-
-      if (tripId) {
-        toast.success("Viagem criada com sucesso");
-        handleCreateTripModalOpen(false);
-        setLoadingConfirmTrip(false);
-        return tripId;
-      }
+      toast.success("Viagem criada com sucesso");
+      handleCreateTripModalOpen(false);
+      setLoadingConfirmTrip(false);
+      return data.id;
     } catch (error) {
       setLoadingConfirmTrip(false);
       const apiError = error as ApiError;
